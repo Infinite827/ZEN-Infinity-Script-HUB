@@ -41,40 +41,33 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- Helper function to send system chat messages
-local StarterGui = game:GetService("StarterGui")
-local function chatMessage(text)
-    pcall(function()
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = text,
-            Color = Color3.fromRGB(0, 255, 255),
-            Font = Enum.Font.SourceSansBold,
-            FontSize = Enum.FontSize.Size24
-        })
-    end)
-end
-
--- FE/Server Sided Chat Admin Commands
+-- FE/Server Sided Chat Admin Commands (outside of Window config)
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
+    local StarterGui = game:GetService("StarterGui")
     local LocalPlayer = Players.LocalPlayer
 
-    -- Prevent multiple fly GUIs by checking if one exists
-    local function loadFlyGui()
-        if LocalPlayer.PlayerGui:FindFirstChild("FlyGuiV3") then
-            chatMessage("Fly GUI already loaded!")
-            return
-        end
+    -- Safe function to send system chat messages
+    local function chatMessage(text)
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = text,
+                Color = Color3.fromRGB(0, 255, 255),
+                Font = Enum.Font.SourceSansBold,
+                FontSize = Enum.FontSize.Size24
+            })
         end)
         if not success then
-            chatMessage("Failed to load Fly GUI: " .. tostring(err))
-        else
-            chatMessage("Fly GUI loaded!")
+            warn("Chat message failed: ".. tostring(err))
         end
     end
+
+    -- Variables to track active states
+    local activeSpinning = false
+    local spinThread = nil
+    local noclipConnection = nil
+    local flyLoaded = false
 
     local commands = {
         ["kill"] = function()
@@ -88,15 +81,47 @@ task.spawn(function()
         end,
 
         ["fly"] = function()
-            loadFlyGui()
+            if flyLoaded then
+                chatMessage("Fly GUI already loaded!")
+                return
+            end
+            local success, err = pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+            end)
+            if success then
+                flyLoaded = true
+                chatMessage("Fly GUI loaded!")
+            else
+                chatMessage("Failed to load Fly GUI: " .. tostring(err))
+            end
+        end,
+
+        ["unfly"] = function()
+            if flyLoaded then
+                local flyGui = LocalPlayer.PlayerGui:FindFirstChild("FlyGuiV3")
+                if flyGui then
+                    flyGui:Destroy()
+                    chatMessage("Fly GUI unloaded.")
+                else
+                    chatMessage("Fly GUI not found!")
+                end
+                flyLoaded = false
+            else
+                chatMessage("Fly GUI is not active.")
+            end
         end,
 
         ["spin"] = function()
+            if activeSpinning then
+                chatMessage("Already spinning!")
+                return
+            end
             local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
                 chatMessage("Spinning started.")
-                task.spawn(function()
-                    while hrp and hrp.Parent do
+                activeSpinning = true
+                spinThread = task.spawn(function()
+                    while activeSpinning and hrp and hrp.Parent do
                         task.wait()
                         hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
                     end
@@ -106,9 +131,22 @@ task.spawn(function()
             end
         end,
 
+        ["unspin"] = function()
+            if activeSpinning then
+                activeSpinning = false
+                chatMessage("Spinning stopped.")
+            else
+                chatMessage("Not spinning right now.")
+            end
+        end,
+
         ["noclip"] = function()
+            if noclipConnection then
+                chatMessage("Noclip already enabled!")
+                return
+            end
             chatMessage("Noclip enabled.")
-            RunService.Stepped:Connect(function()
+            noclipConnection = RunService.Stepped:Connect(function()
                 if LocalPlayer.Character then
                     for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
                         if part:IsA("BasePart") then
@@ -119,14 +157,23 @@ task.spawn(function()
             end)
         end,
 
+        ["unnoclip"] = function()
+            if noclipConnection then
+                noclipConnection:Disconnect()
+                noclipConnection = nil
+                chatMessage("Noclip disabled.")
+            else
+                chatMessage("Noclip is not enabled.")
+            end
+        end,
+
         ["cmds"] = function()
             local list = {}
             for name in pairs(commands) do
                 table.insert(list, ":" .. name)
             end
             table.sort(list)
-            local msg = "Available Commands: " .. table.concat(list, ", ")
-            chatMessage(msg)
+            chatMessage("Available Commands: " .. table.concat(list, ", "))
         end,
     }
 
@@ -137,7 +184,7 @@ task.spawn(function()
             if commands[cmd] then
                 local success, err = pcall(commands[cmd])
                 if not success then
-                    chatMessage("Error running command: " .. tostring(err))
+                    chatMessage("Error running command: ".. tostring(err))
                 end
             else
                 chatMessage("Unknown command: " .. cmd)
@@ -150,7 +197,7 @@ end)
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-Home_Tab:CreateDivider()
+local Divider = Home_Tab:CreateDivider()
 
 Home_Tab:CreateButton({
     Name = "Unload The ZEN Infinity Script HUB",
@@ -161,7 +208,7 @@ Home_Tab:CreateButton({
 
 -- Game Scripts Tab
 local Game_Scripts = Window:CreateTab("Game Scripts", 4483362458)
-Game_Scripts:CreateDivider()
+local Divider = Game_Scripts:CreateDivider()
 
 Game_Scripts:CreateButton({
     Name = "Natural Disaster Survival Scripts",
@@ -200,7 +247,7 @@ Game_Scripts:CreateButton({
 
 -- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
-PlayerTab:CreateDivider()
+local Divider = PlayerTab:CreateDivider()
 
 PlayerTab:CreateSlider({
     Name = "WalkSpeed",
@@ -234,11 +281,11 @@ PlayerTab:CreateSlider({
 
 -- Additional Scripts Tab
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
-Additional_Scripts:CreateDivider()
+local Divider = Additional_Scripts:CreateDivider()
 
 -- Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
-Trolling:CreateDivider()
+local Divider = Trolling:CreateDivider()
 
 Trolling:CreateButton({
     Name = "FE Server-Sided Sword",
@@ -246,14 +293,22 @@ Trolling:CreateButton({
         local success, err = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
         end)
-        if success then
-            chatMessage("FE Server-Sided Sword loaded successfully!")
+        if not success then
+            warn("Failed to load FE Sword: " .. tostring(err))
         else
-            chatMessage("Failed to load FE Sword: " .. tostring(err))
+            -- Show confirmation message
+            local StarterGui = game:GetService("StarterGui")
+            local success2, err2 = pcall(function()
+                StarterGui:SetCore("ChatMakeSystemMessage", {
+                    Text = "FE Server-Sided Sword loaded!",
+                    Color = Color3.fromRGB(0, 255, 255),
+                    Font = Enum.Font.SourceSansBold,
+                    FontSize = Enum.FontSize.Size24
+                })
+            end)
+            if not success2 then
+                warn("Failed to send confirmation chat message: " .. tostring(err2))
+            end
         end
     end
 })
-
-
-
-
