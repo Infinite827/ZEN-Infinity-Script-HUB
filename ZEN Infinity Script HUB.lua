@@ -3,19 +3,18 @@
 local success, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 end)
-if success then
-    print("Thanks for using our Script Hub")
-end
-else
+
 if not success then
     warn("Failed to load Rayfield.")
     return
+else
+print("Thanks for using our Script Hub!")
 end
 
 -- Create the main window
 local Window = Rayfield:CreateWindow({
-    Name = "ZEN Infinity Script HUB",
-    LoadingTitle = "ZEN Infinity Script HUB",
+    Name = "ZEN Infinity HUB",
+    LoadingTitle = "ZEN Infinity HUB",
     LoadingSubtitle = "by us",
     ShowText = "ZEN Infinity Script HUB",
     Theme = "Amethyst",
@@ -47,34 +46,7 @@ local Window = Rayfield:CreateWindow({
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-local [display name] =
-local Player = game.Players.LocalPlayer
-local displayName = Player.DisplayName
-local Divider = Home_Tab:CreateDivider()
-local Paragraph = Home_Tab:CreateParagraph({Title = "", Content = "Hi ,[display name]
-ZEN Infinity Script HUB is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
 
-local Divider = Home_Tab:CreateDivider()
-
--- My YouTube Channel Button
-Home_Tab:CreateButton({
-    Name = "YouTube Channel",
-    Callback = function()
-        if not getgenv().openBrowser then
-            setclipboard("https://www.youtube.com/@Infinite_Original")
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "Link copied to clipboard: https://www.youtube.com/@Infinite_Original",
-                Color = Color3.fromRGB(255, 255, 0)
-            })
-        else
-            getgenv().openBrowser("https://www.youtube.com/@Infinite_Original")
-        end
-    end
-})
-
-local Divider = Home_Tab:CreateDivider()
-
--- Unload Button
 Home_Tab:CreateButton({
     Name = "Unload The ZEN Infinity Script HUB",
     Callback = function()
@@ -166,7 +138,10 @@ Trolling:CreateButton({
     Name = "Super Ring Parts By V6 Lukas",
     Callback = function()
         local success, err = pcall(function()
-
+            --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- The tags get stealed and i will not leak it
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -842,24 +817,14 @@ TextButton1.Active = true
 TextButton1.MouseButton1Click:Connect(function() 
 loadstring(game:HttpGet("https://pastebin.com/raw/ySHJdZpb",true))()
 end)
-
+-- Just that enjoy skidding this lol
         end)
         if not success then
             warn("Failed to load Super Ring Parts By V6 Lukas: " .. tostring(err))
         end
     end
 })
-Trolling:CreateButton({
-    Name = "Chat Bypasser (KEY SYSTEM)",
-    Callback = function()
-        local success, err = pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))
-        end)
-        if not success then
-            warn("Failed to load Chat Bypasser (KEY SYSTEM): " .. tostring(err))
-        end
-    end
-})
+
 -- Chat Admin Commands (runs automatically on hub load)
 task.spawn(function()
     local Players = game:GetService("Players")
