@@ -1,3 +1,4 @@
+
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
@@ -197,6 +198,15 @@ end)
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local username = LocalPlayer and LocalPlayer.Name or "Player"
+
+local Paragraph = Home_Tab:CreateParagraph({
+    Title = "Hi, " .. username,
+    Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."
+})
 local Divider = Home_Tab:CreateDivider()
 
 Home_Tab:CreateButton({
@@ -312,3 +322,4 @@ Trolling:CreateButton({
         end
     end
 })
+
