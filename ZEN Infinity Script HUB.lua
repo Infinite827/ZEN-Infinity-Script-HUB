@@ -1,7 +1,8 @@
 
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
-    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua"))()
+
 end)
 
 if not success then
