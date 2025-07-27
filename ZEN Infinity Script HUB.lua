@@ -40,37 +40,10 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false,
 })
 
--- Commands list for :cmds (You can customize or remove if unused)
-local commandList = {
-    ":fly [target]",
-    ":unfly [target]",
-    ":spin [target]",
-    ":unspin [target]",
-    ":jump [target]",
-    ":kill [target]",
-    ":invisible [target]",
-    ":uninvisible [target]",
-    ":sit [target]",
-    ":unsit [target]",
-    ":fling [target]",
-    ":cmds"
-}
-
--- Send chat system message safely
-local function sendChat(msg, color)
-    StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = msg,
-        Color = color or Color3.new(1, 1, 1),
-        Font = Enum.Font.SourceSansBold,
-        FontSize = Enum.FontSize.Size24
-    })
-end
-
 -- UI Tabs
 
 -- HOME TAB
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-
 Home_Tab:CreateButton({
    Name = "Unload The ZEN Infinity Script HUB Interface",
    Callback = function()
@@ -109,26 +82,6 @@ Home_Tab:CreateButton({
 
 Home_Tab:CreateDivider()
 
--- HD Admin Button
-Home_Tab:CreateButton({
-    Name = "Load HD Admin",
-    Callback = function()
-        Rayfield:Notify({
-            Title = "Loading HD Admin...",
-            Content = "Please wait...",
-            Duration = 2
-        })
-        loadstring(game:HttpGet("https://pastebin.com/raw/ruSm9UBf", true))()
-    end,
-})
-
-Home_Tab:CreateDivider()
-
-Home_Tab:CreateParagraph({
-    Title = "Commands List",
-    Content = table.concat(commandList, "\n")
-})
-
 -- PLAYER TAB
 local Player_Tab = Window:CreateTab("Player", 4483362458)
 Player_Tab:CreateDivider()
@@ -144,6 +97,7 @@ end
 local humanoid = getCurrentHumanoid()
 local currentWalkSpeed = humanoid and humanoid.WalkSpeed or 16
 local currentJumpPower = humanoid and humanoid.JumpPower or 50
+local currentHealth = humanoid and humanoid.Health or 100
 
 Player_Tab:CreateSlider({
    Name = "WalkSpeed",
@@ -169,6 +123,21 @@ Player_Tab:CreateSlider({
       local h = getCurrentHumanoid()
       if h then
          h.JumpPower = Value
+      end
+   end,
+})
+
+Player_Tab:CreateSlider({
+   Name = "Health",
+   Range = {1, 1000000},
+   Increment = 1,
+   Suffix = "HP",
+   CurrentValue = currentHealth,
+   Callback = function(Value)
+      local h = getCurrentHumanoid()
+      if h then
+         h.MaxHealth = Value
+         h.Health = Value
       end
    end,
 })
@@ -272,3 +241,4 @@ Rayfield:Notify({
     Content = "Loaded successfully!",
     Duration = 5
 })
+
