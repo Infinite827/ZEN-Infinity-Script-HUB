@@ -1,35 +1,3 @@
---commands
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- Chat Commands Table
-local Commands = {
-    ["/fly"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite-Store/Fly/main/main.lua"))()
-    end,
-
-    ["/kill"] = function()
-        LocalPlayer.Character:BreakJoints()
-    end,
-
-    ["/tools"] = function()
-        for _, tool in pairs(game:GetService("StarterPack"):GetChildren()) do
-            tool:Clone().Parent = LocalPlayer.Backpack
-        end
-    end,
-
-    ["/sword"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite827/ZEN-Infinity-Script-HUB/main/Tools/FESword.lua"))()
-    end,
-}
-
--- Listen for Chat Messages
-LocalPlayer.Chatted:Connect(function(msg)
-    msg = msg:lower()
-    if Commands[msg] then
-        pcall(Commands[msg])
-    end
-end)
 
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
@@ -139,16 +107,42 @@ PlayerTab:CreateSlider({
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
 
 Additional_Scripts:CreateButton({
-    Name = "Chat Admin Commands (FE)",
+    Name = "Enable Chat Admin Commands (FE)",
     Callback = function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/1f0yt/community/main/ChatCommands.lua"))()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+
+        -- Setup Chat Commands
+        LocalPlayer.Chatted:Connect(function(msg)
+            msg = msg:lower()
+
+            if msg == "/fly" then
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite-Store/Fly/main/main.lua"))()
+
+            elseif msg == "/kill" then
+                if LocalPlayer.Character then
+                    LocalPlayer.Character:BreakJoints()
+                end
+
+            elseif msg == "/sword" then
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
+
+            elseif msg == "/tools" then
+                for _, tool in ipairs(game:GetService("StarterPack"):GetChildren()) do
+                    tool:Clone().Parent = LocalPlayer.Backpack
+                end
+            end
         end)
-        if not success then
-            warn("Failed to load chat admin commands: " .. tostring(err))
-        end
+
+        Rayfield:Notify({
+            Title = "Chat Admin Enabled",
+            Content = "Type commands like /fly, /sword, /kill, or /tools in chat.",
+            Duration = 6.5,
+            Image = 4483362458
+        })
     end
 })
+
 
 --Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
