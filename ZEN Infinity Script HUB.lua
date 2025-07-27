@@ -123,6 +123,12 @@ PlayerTab:CreateSlider({
     end,
 })
 
+-- Additional Scripts
+local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
+local Divider = Additional_Scripts:CreateDivider()
+--delete this code when you add scripts
+local Label = Additional_Scripts:CreateLabel("No Scripts Here Yet!", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
+
 -- Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
 
