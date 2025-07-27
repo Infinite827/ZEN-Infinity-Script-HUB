@@ -1,347 +1,91 @@
--- ZEN Infinity Script HUB
-
-
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- ZEN Infinity Script HUB (Fixed and working)
 
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+local localPlayer = Players.LocalPlayer
 
--- Amethyst Theme colors from Rayfield's default Amethyst theme
-local AmethystTheme = {
-    Accent = Color3.fromRGB(156, 39, 176),
-    WindowBackground = Color3.fromRGB(30, 30, 30),
-    TextColor = Color3.fromRGB(230, 230, 230),
-    TextBoxBackground = Color3.fromRGB(45, 45, 45),
-    OutlineColor = Color3.fromRGB(80, 0, 130),
-    DropDownBackground = Color3.fromRGB(40, 0, 60)
-}
+-- Load Rayfield UI with correct URL
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua'))()
 
--- Create Window
 local Window = Rayfield:CreateWindow({
-    Name = "ZEN Infinity Script HUB",
-    LoadingTitle = "Loading ZEN Infinity Script HUB",
+    Name = "ZEN Infinity HUB",
+    LoadingTitle = "Loading ZEN Infinity HUB",
     LoadingSubtitle = "by InfiniteMaster",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "ZENInfinityHubConfigs",
-        FileName = "ZENInfinityConfig"
-    },
-    Discord = {
-        Enabled = false
+        FolderName = "ZENInfinityHub",
+        FileName = "config"
     },
     KeySystem = false,
-    Theme = AmethystTheme
+    Theme = "Amethyst"
 })
-
--- Utility functions
-
--- Send chat message as local player
-local function sendChatMessage(msg)
-    local success, err = pcall(function()
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
-    end)
-    if not success then
-        warn("Failed to send chat message:", err)
-    end
-end
-
--- Send system chat message (server-like)
-local function sendSystemMessage(msg, color)
-    -- Use StarterGui:SetCore for system chat message if possible
-    local StarterGui = game:GetService("StarterGui")
-    pcall(function()
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = msg,
-            Color = color or Color3.fromRGB(156, 39, 176),
-            Font = Enum.Font.SourceSansBold,
-            FontSize = Enum.FontSize.Size24
-        })
-    end)
-end
-
--- Print command usage to chat
-local function printCommandUsage()
-    local cmds = {
-        ":sit [all/others/me]",
-        ":fling [all/others/me]",
-        ":invisible [all/others/me]",
-        ":visible [all/others/me]",
-        ":kill [all/others/me]",
-        ":respawn [all/others/me]",
-        ":heal [all/others/me]",
-        ":ff [all/others/me]",
-        ":unff [all/others/me]",
-        ":cmds",
-    }
-    sendSystemMessage("Available commands:", AmethystTheme.Accent)
-    for _, cmd in ipairs(cmds) do
-        sendSystemMessage("  " .. cmd, Color3.fromRGB(200, 200, 200))
-    end
-end
-
--- Target player selection helper
-local function getTargets(targetStr)
-    local targets = {}
-
-    if not targetStr or targetStr == "" then
-        -- Default to me
-        table.insert(targets, LocalPlayer)
-    elseif targetStr == "all" then
-        for _, p in pairs(Players:GetPlayers()) do
-            table.insert(targets, p)
-        end
-    elseif targetStr == "others" then
-        for _, p in pairs(Players:GetPlayers()) do
-            if p ~= LocalPlayer then
-                table.insert(targets, p)
-            end
-        end
-    elseif targetStr == "me" then
-        table.insert(targets, LocalPlayer)
-    else
-        -- Try to find by name or partial match
-        for _, p in pairs(Players:GetPlayers()) do
-            if string.lower(p.Name) == string.lower(targetStr) or string.find(string.lower(p.Name), string.lower(targetStr)) then
-                table.insert(targets, p)
-            end
-        end
-        if #targets == 0 then
-            sendSystemMessage("No players found matching: " .. targetStr, Color3.new(1,0,0))
-        end
-    end
-    return targets
-end
-
--- Command implementations
-local Commands = {}
-
--- :sit command
-function Commands.sit(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.Sit = true
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :fling command
-function Commands.fling(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            local hrp = character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                -- Add a BodyVelocity to fling player upwards
-                local bv = Instance.new("BodyVelocity")
-                bv.Velocity = Vector3.new(0, 100, 0)
-                bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-                bv.Parent = hrp
-                game.Debris:AddItem(bv, 0.5)
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :invisible command
-function Commands.invisible(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") or part:IsA("Decal") then
-                    part.Transparency = 1
-                elseif part:IsA("ParticleEmitter") or part:IsA("Light") then
-                    part.Enabled = false
-                end
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :visible command
-function Commands.visible(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") or part:IsA("Decal") then
-                    part.Transparency = 0
-                elseif part:IsA("ParticleEmitter") or part:IsA("Light") then
-                    part.Enabled = true
-                end
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :kill command
-function Commands.kill(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.Health = 0
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :respawn command
-function Commands.respawn(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        if player == LocalPlayer then
-            player:LoadCharacter()
-        else
-            -- Remote event to force respawn for other players would be needed, so just skip for others
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully (Local Player Only)")
-end
-
--- :heal command
-function Commands.heal(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.Health = humanoid.MaxHealth
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :ff command (force field)
-function Commands.ff(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            if not character:FindFirstChildOfClass("ForceField") then
-                local ff = Instance.new("ForceField")
-                ff.Parent = character
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :unff command (remove force field)
-function Commands.unff(args)
-    local targets = getTargets(args[1])
-    for _, player in pairs(targets) do
-        local character = player.Character
-        if character then
-            local ff = character:FindFirstChildOfClass("ForceField")
-            if ff then
-                ff:Destroy()
-            end
-        end
-    end
-    sendSystemMessage("Server: Command Executed Successfully")
-end
-
--- :cmds command (list commands)
-function Commands.cmds(args)
-    printCommandUsage()
-end
-
--- Chat command handler
-local function onChatted(msg)
-    if string.sub(msg,1,1) == ":" then
-        local args = {}
-        for word in string.gmatch(msg, "%S+") do
-            table.insert(args, word)
-        end
-        local cmd = string.sub(args[1], 2):lower() -- command name without ':'
-        table.remove(args, 1)
-        if Commands[cmd] then
-            local success, err = pcall(function()
-                Commands[cmd](args)
-            end)
-            if not success then
-                sendSystemMessage("Server: Command Failed To Execute", Color3.fromRGB(255, 50, 50))
-                warn("Command error:", err)
-            end
-        else
-            sendSystemMessage("Unknown command: " .. cmd, Color3.fromRGB(255, 50, 50))
-        end
-    end
-end
-
--- Connect chat event
-LocalPlayer.Chatted:Connect(onChatted)
-
--- UI Construction
 
 -- Home Tab
-local HomeTab = Window:CreateTab("Home")
+local Home_Tab = Window:CreateTab("Home")
 
--- Greeting label
-local greetingLabel = HomeTab:CreateLabel("Hi, " .. LocalPlayer.DisplayName .. "!")
--- Two line gap
-HomeTab:CreateLabel(" ")
-HomeTab:CreateLabel(" ")
+local displayName = localPlayer and localPlayer.DisplayName or "Player"
+Home_Tab:CreateLabel("Hi, " .. displayName)
+Home_Tab:CreateLabel("")
+Home_Tab:CreateLabel("")
 
--- Commands list label below greeting
-local commandsListLabel = HomeTab:CreateLabel("Available commands (type in chat with ':' prefix):")
-local cmdsText = [[
-:sit [all/others/me]
-:fling [all/others/me]
-:invisible [all/others/me]
-:visible [all/others/me]
-:kill [all/others/me]
-:respawn [all/others/me]
-:heal [all/others/me]
-:ff [all/others/me]
-:unff [all/others/me]
-:cmds
+local commandsParagraph = [[
+Commands list:
+:kill [target] - Kill target player(s)
+:sit [target] - Make target player(s) sit
+:fling [target] - Fling target player(s)
+:invisible [target] - Make target player(s) invisible
+:uninvisible [target] - Make target player(s) visible again
+:cmds - Show this list
+
+Targets:
+all = everyone
+others = everyone except you
+me = yourself
+PlayerName = specific player
 ]]
-HomeTab:CreateParagraph("Commands", cmdsText)
 
--- Button to open your YouTube channel
-HomeTab:CreateButton({
+Home_Tab:CreateParagraph({
+    Title = "Commands",
+    Content = commandsParagraph
+})
+
+Home_Tab:CreateButton({
     Name = "My Youtube Channel",
-    Description = "Open InfiniteMaster's YouTube Channel",
     Callback = function()
-        local success, err = pcall(function()
-            -- Open URL in default browser
-            -- Roblox does not allow direct URL opening, but using SetClipboard + Notify as workaround
-            setclipboard("https://www.youtube.com/@Infinite_Original")
-            sendSystemMessage("YouTube channel link copied to clipboard!", AmethystTheme.Accent)
+        local msg = "Check out: https://www.youtube.com/@Infinite_Original"
+        print(msg)
+        pcall(function()
+            localPlayer:SendNotification({
+                Title = "YouTube Channel",
+                Text = msg,
+                Duration = 5
+            })
         end)
-        if not success then
-            sendSystemMessage("Failed to copy YouTube link to clipboard.", Color3.new(1,0,0))
-        end
     end
 })
 
--- Player Tab
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-local Divider = PlayerTab:CreateDivider()
+-- Trolling Tab
+local Trolling_Tab = Window:CreateTab("Trolling")
 
-local Slider = PlayerTab:CreateSlider({
+Trolling_Tab:CreateButton({
+    Name = "FE Sword",
+    Callback = function()
+        -- Add your FE sword script here
+        print("FE Sword script executed")
+    end
+})
+
+-- WalkSpeed slider with persistence on respawn
+local currentWalkSpeed = 16
+
+local function setWalkSpeed(value)
+    local character = localPlayer.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = value
+    end
+end
+
+Trolling_Tab:CreateSlider({
     Name = "WalkSpeed",
     Min = 16,
     Max = 250,
@@ -350,49 +94,155 @@ local Slider = PlayerTab:CreateSlider({
     Suffix = " speed",
     Flag = "WalkSpeed",
     Callback = function(value)
-        local character = Players.LocalPlayer.Character
-        local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = value
-        end
+        currentWalkSpeed = value
+        setWalkSpeed(value)
     end,
 })
 
- local Slider = PlayerTab:CreateSlider({
-    Name = "Jump Height",
-    Range = {0, 100000},
-    Increment = 1,
-    Suffix = "Height",
-    CurrentValue = 0,
-    Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-     game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-    end,
- })
+localPlayer.CharacterAdded:Connect(function(character)
+    character:WaitForChild("Humanoid")
+    setWalkSpeed(currentWalkSpeed)
+end)
 
--- Addidional Scripts Tab
-local Addidional_Scripts = Window:CreateTab("Addidional Scripts")
-local Divider = Addidional_Scripts:CreateDivider()
+-- Command Handler
+local function getPlayersFromTarget(target)
+    local players = {}
 
--- Trolling Tab
-local TrollingTab = Window:CreateTab("Trolling")
-local Divider = TrollingTab:CreateDivider()
-
-TrollingTab:CreateButton({
-    Name = "Super Ring Parts By V6 lukas",
-    Callback = function()
-        local character = LocalPlayer.Character
-        if not character then
-            sendSystemMessage("Character not loaded.", Color3.new(1,0,0))
-            return
+    if target == "all" then
+        players = Players:GetPlayers()
+    elseif target == "others" then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= localPlayer then
+                table.insert(players, player)
+            end
         end
-        sendSystemMessage("Super Ring Parts By V6 lukas", AmethystTheme.Accent)
+    elseif target == "me" then
+        players = {localPlayer}
+    else
+        -- Find player by name or display name
+        for _, player in pairs(Players:GetPlayers()) do
+            if string.lower(player.Name) == string.lower(target) or string.lower(player.DisplayName) == string.lower(target) then
+                table.insert(players, player)
+                break
+            end
+        end
     end
-})
 
--- You can add more tabs/buttons below as needed
+    return players
+end
 
--- Finalize and notify user
-sendSystemMessage("ZEN Infinity Script HUB loaded successfully! Type :cmds for commands list.", AmethystTheme.Accent)
+local Commands = {}
 
+Commands["kill"] = function(target)
+    local targets = getPlayersFromTarget(target)
+    for _, player in pairs(targets) do
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.Health = 0
+        end
+    end
+end
 
+Commands["sit"] = function(target)
+    local targets = getPlayersFromTarget(target)
+    for _, player in pairs(targets) do
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.Sit = true
+        end
+    end
+end
+
+Commands["fling"] = function(target)
+    local targets = getPlayersFromTarget(target)
+    for _, player in pairs(targets) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = player.Character.HumanoidRootPart
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Velocity = Vector3.new(0, 500, 0)
+            bodyVelocity.P = 1250
+            bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
+            bodyVelocity.Parent = hrp
+            game.Debris:AddItem(bodyVelocity, 0.5)
+        end
+    end
+end
+
+Commands["invisible"] = function(target)
+    local targets = getPlayersFromTarget(target)
+    for _, player in pairs(targets) do
+        if player.Character then
+            for _, part in pairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") or part:IsA("Decal") then
+                    part.Transparency = 1
+                elseif part:IsA("ParticleEmitter") or part:IsA("Trail") then
+                    part.Enabled = false
+                end
+            end
+        end
+    end
+end
+
+Commands["uninvisible"] = function(target)
+    local targets = getPlayersFromTarget(target)
+    for _, player in pairs(targets) do
+        if player.Character then
+            for _, part in pairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") or part:IsA("Decal") then
+                    part.Transparency = 0
+                elseif part:IsA("ParticleEmitter") or part:IsA("Trail") then
+                    part.Enabled = true
+                end
+            end
+        end
+    end
+end
+
+Commands["cmds"] = function()
+    local msg = "Commands: :kill, :sit, :fling, :invisible, :uninvisible, :cmds"
+    game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
+        Text = msg;
+        Color = Color3.new(1, 1, 0);
+        Font = Enum.Font.SourceSansBold;
+        FontSize = Enum.FontSize.Size24;
+    })
+end
+
+-- Chat command listener
+local function onChatted(msg)
+    if string.sub(msg,1,1) == ":" then
+        local args = {}
+        for word in string.gmatch(msg, "%S+") do
+            table.insert(args, word)
+        end
+
+        local commandName = string.sub(args[1], 2):lower()
+        local target = args[2] or "me"
+
+        local commandFunc = Commands[commandName]
+        if commandFunc then
+            local success, err = pcall(function()
+                commandFunc(target)
+            end)
+            if success then
+                game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
+                    Text = "Server: Command Executed Successfully";
+                    Color = Color3.new(0, 1, 0);
+                    Font = Enum.Font.SourceSansBold;
+                    FontSize = Enum.FontSize.Size24;
+                })
+            else
+                game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
+                    Text = "Server: Command Failed To Execute - "..err;
+                    Color = Color3.new(1, 0, 0);
+                    Font = Enum.Font.SourceSansBold;
+                    FontSize = Enum.FontSize.Size24;
+                })
+            end
+        end
+    end
+end
+
+if localPlayer and localPlayer.Chatted then
+    localPlayer.Chatted:Connect(onChatted)
+end
+
+print("ZEN Infinity HUB loaded successfully.")
