@@ -95,6 +95,8 @@ Home_Tab:CreateParagraph({
     Content = table.concat(commandList, "\n")
 })
 
+print("Commands List")
+
 -- ===== PLAYER TAB =====
 local Player_Tab = Window:CreateTab("Player", 4483362458)
 Player_Tab:CreateDivider()
@@ -200,9 +202,36 @@ Trolling_Tab:CreateDivider()
 Trolling_Tab:CreateButton({
    Name = "Jerk Off Tool (Universal)",
    Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/imalwaysad/universal-gui/refs/heads/main/jerk%20off%20r6"))()
-   end,
+local humanoid = character:FindFirstChild("Humanoid") -- Assuming 'character' is the player's character model
+if humanoid then
+  if humanoid.RigType == Enum.HumanoidRigType.R15 then
+    -- The avatar is R15
+    loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+  else
+    -- The avatar is R6
+    loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
+  end
+end,
 })
+
+local function sendChat(msg, color)
+    game.StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = msg,
+        Color = color or Color3.new(1, 1, 1)
+    })
+end
+
+LocalPlayer.Chatted:Connect(function(msg)
+    if not msg:match("^:") then return end
+    local split = msg:sub(2):split(" ")
+    local command = split[1]
+
+    if command == "cmds" then
+        for _, c in ipairs(Command List) do
+            sendChat(c, Color3.new(255, 255, 255))
+        end
+    end
+end)
 
 -- ===== CHAT COMMAND HANDLER =====
 local function GetPlayersFromTarget(target)
