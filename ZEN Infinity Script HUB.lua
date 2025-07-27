@@ -48,7 +48,7 @@ local Window = Rayfield:CreateWindow({
 local Home_Tab = Window:CreateTab("Home")
 
    Home_Tab:CreateDivider()
-local Button = Tab:CreateButton({
+local Button = Home_Tab:CreateButton({
    Name = "Unload The ZEN Infinity Script HUB Interface",
    Callback = function()
 --reset admin commands and kill player
@@ -61,6 +61,7 @@ Rayfield:Notify({
    Rayfield:Destroy()
    end,
 })
+
 Home_Tab:CreateDivider()
 
 local displayName = localPlayer and localPlayer.DisplayName or "Player"
@@ -83,8 +84,8 @@ Home_Tab:CreateButton({
         })
         pcall(function()
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "ZEN Infinity",
-                Text = "Visit InfiniteMaster's YouTube!",
+                Title = "ZEN Infinity Script HUB",
+                Text = "Copied Youtube Channel Link",
                 Duration = 5
             })
         end)
@@ -111,41 +112,53 @@ Targets: me, all, others, PlayerName
 ]]
 })
 
+local PlayerTab = Window:CreateTab("Player") -- Title
+local Divider = PlayerTab:CreateDivider()
+
+ local Slider = PlayerTab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 1000},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 0,
+    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+     game.Players.LocalPlayer.Character:SetAttribute("SpeedMultiplier", Value)
+    end,
+ })
+
+ local Slider = PlayerTab:CreateSlider({
+    Name = "Jump Height",
+    Range = {50, 10000},
+    Increment = 1,
+    Suffix = "Height",
+    CurrentValue = 0,
+    Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+     game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+    end,
+ })
+
+localPlayer.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid").WalkSpeed = currentWalkSpeed
+end)
+
+
+-- Additional Scripts Tab
+local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458) -- Title, Image
+local Divider = Additional_Scripts:CreateDivider()
+
 -- TROLLING TAB
 local Trolling_Tab = Window:CreateTab("Trolling", 4483362458) -- Title, Image
 local Divider = Trolling_Tab:CreateDivider()
 
-PlayerTab:CreateButton({
+Trolling_Tab:CreateButton({
     Name = "FE Sword",
     Callback = function()
         -- Paste working FE sword script here if you have one
         print("FE Sword script placeholder executed.")
     end
 })
-
-local PlayerTab = Window:CreateTab("Player")-- Title
-local Divider = PlayerTab:CreateDivider()
-
--- WALKSPEED
-local currentWalkSpeed = 16
-PlayerTab:CreateSlider({
-    Name = "WalkSpeed",
-    Min = 16,
-    Max = 250,
-    Default = 16,
-    Increment = 1,
-    Flag = "WalkSpeed",
-    Suffix = " speed",
-    Callback = function(value)
-        currentWalkSpeed = value
-        local human = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if human then human.WalkSpeed = value end
-    end
-})
-
-localPlayer.CharacterAdded:Connect(function(char)
-    char:WaitForChild("Humanoid").WalkSpeed = currentWalkSpeed
-end)
 
 -- COMMAND SYSTEM
 local Commands = {}
