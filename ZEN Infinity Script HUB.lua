@@ -45,11 +45,11 @@ local Window = Rayfield:CreateWindow({
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-local [display name] =
+local display name =
 local Player = game.Players.LocalPlayer
 local displayName = Player.DisplayName
 local Divider = Home_Tab:CreateDivider()
-local Paragraph = Home_Tab:CreateParagraph({Title = "", Content = "Hi ,[display name]
+local Paragraph = Home_Tab:CreateParagraph({Title = "", Content = "Hi , display name
 ZEN Infinity Script HUB is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
 
 local Divider = Home_Tab:CreateDivider()
