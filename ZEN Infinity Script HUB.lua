@@ -41,18 +41,18 @@ local DisplayName = LocalPlayer.DisplayName
 
 -- ===== HOME TAB =====
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-local Button = Tab:CreateButton({
+Home_Tab:CreateButton({
    Name = "Unload The ZEN Infinity Script HUB Interface",
    Callback = function()
-   Rayfield:Notify({
-   Title = "See You Soon!",
-   Content = "unloaded the interface",
-   Duration = 6.5,
-   Image = 4483362458,
-})
+      Rayfield:Notify({
+         Title = "See You Soon!",
+         Content = "unloaded the interface",
+         Duration = 6.5,
+         Image = 4483362458,
+      })
 
-wait(3.5)
-Rayfield:Destroy()
+      wait(3.5)
+      Rayfield:Destroy()
    end,
 })
 Home_Tab:CreateDivider()
@@ -97,7 +97,7 @@ Home_Tab:CreateParagraph({
 
 -- ===== PLAYER TAB =====
 local Player_Tab = Window:CreateTab("Player", 4483362458)
-PlayerTab:CreateDivider()
+Player_Tab:CreateDivider()
 Player_Tab:CreateSlider({
    Name = "WalkSpeed",
    Range = {16, 250},
@@ -154,17 +154,6 @@ Game_Scripts:CreateButton({
    end,
 })
 
--- ===== TROLLING TAB =====
-local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateDivider()
-
-Trolling_Tab:CreateButton({
-   Name = "Jerk Off Tool (Universal)",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/imalwaysad/universal-gui/refs/heads/main/jerk%20off%20r6"))()
-   end,
-})
-
 -- ===== ADDITIONAL SCRIPTS TAB =====
 local Additional_Scripts = Window:CreateTab("Additional Scripts")
 Additional_Scripts:CreateDivider()
@@ -198,16 +187,20 @@ Additional_Scripts:CreateButton({
 })
 
 Additional_Scripts:CreateButton({
-   Name = "Menace Hub (my friends hub)",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
    Name = "Fly Gui V3",
    Callback = function()
       loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
+
+-- ===== TROLLING TAB =====
+local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
+Trolling_Tab:CreateDivider()
+
+Trolling_Tab:CreateButton({
+   Name = "Jerk Off Tool (Universal)",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/imalwaysad/universal-gui/refs/heads/main/jerk%20off%20r6"))()
    end,
 })
 
