@@ -1,271 +1,143 @@
+-- ZEN Infinity HUB - Full Script
+-- Built with Rayfield UI | by Infinite_Original
 
--- Load Rayfield UI Library
-local success, Rayfield = pcall(function()
-    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-end)
+-- Load Rayfield UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-if not success then
-    warn("Failed to load Rayfield.")
-    return
-end
-
--- Create the main window
 local Window = Rayfield:CreateWindow({
     Name = "ZEN Infinity HUB",
     LoadingTitle = "ZEN Infinity HUB",
-    LoadingSubtitle = "by us",
-    ShowText = "ZEN Infinity Script HUB",
-    Theme = "Amethyst",
-    ToggleUIKeybind = Enum.KeyCode.Semicolon,
-
+    LoadingSubtitle = "by Infinite_Original",
     ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "ZENHub",
-        FileName = "ZEN_Config"
+        Enabled = false,
+        FolderName = nil,
+        FileName = "ZENInfinityHubConfig"
     },
-
     Discord = {
         Enabled = false,
-        Invite = "noinvitelink",
-        RememberJoins = true
+        Invite = "",
+        RememberJoins = false
     },
-
     KeySystem = false,
-    KeySettings = {
-        Title = "Key System",
-        Subtitle = "Enter Key",
-        Note = "No key required.",
-        FileName = "ZENKey",
-        SaveKey = true,
-        GrabKeyFromSite = false,
-        Key = {"Hello"}
-    }
 })
 
--- Home Tab
+--// Variables
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local PlayerName = lp.DisplayName
+
+local function sendChat(msg, color)
+    game.StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = msg,
+        Color = color or Color3.new(1, 1, 1),
+        Font = Enum.Font.SourceSans,
+        FontSize = Enum.FontSize.Size24
+    })
+end
+
+-- Command list
+local commandList = {
+    ":fly", ":unfly",
+    ":spin", ":unspin",
+    ":jump",
+    ":kill",
+    ":cmds"
+}
+
+--// Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
+Home_Tab:CreateLabel("Hi, " .. PlayerName)
+Home_Tab:CreateDivider()
 
+-- Youtube Button
 Home_Tab:CreateButton({
-    Name = "Unload The ZEN Infinity Script HUB",
+    Name = "My Youtube Channel",
     Callback = function()
-        Rayfield:Destroy()
-    end
-})
-
--- Game Scripts Tab
-local Game_Scripts = Window:CreateTab("Game Scripts", 4483362458)
-
-Game_Scripts:CreateButton({
-    Name = "Natural Disaster Survival Scripts",
-    Callback = function()
-        pcall(function()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Free-CLIENTSIDED-Balloon-Giver!_175"))()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/main/CoolGui.lua"))()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/main/Free%20Sus%20Missile"))()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Natural-Disaster-Survival-Katers-NDS-Hub-19533"))()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-            loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
-        end)
-    end
-})
-
-Game_Scripts:CreateButton({
-    Name = "Roleplaying Script",
-    Callback = function()
-        local function safeLoad(url)
-            local success, result = pcall(function()
-                loadstring(game:HttpGet(url))()
-            end)
-            if not success then
-                warn("Failed to load: " .. url .. "\nError: " .. result)
-            end
-        end
-
-        safeLoad("https://raw.githubusercontent.com/hyperionhax/c00lgui/main/CoolGui.lua")
-        safeLoad("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/main/Free%20Sus%20Missile")
-        safeLoad("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt")
-        safeLoad("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320")
-        safeLoad("https://raw.githubusercontent.com/Synergy-Networks/products/main/BetterBypasser/loader.lua")
-    end
-})
-
--- Player Tab
-local PlayerTab = Window:CreateTab("Player", 4483362458)
-
-PlayerTab:CreateSlider({
-    Name = "WalkSpeed",
-    Range = {16, 1000},
-    Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 16,
-    Flag = "WalkSpeedSlider",
-    Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChildWhichIsA("Humanoid") then
-            char.Humanoid.WalkSpeed = Value
-        end
-    end,
-})
-
-PlayerTab:CreateSlider({
-    Name = "Jump Power",
-    Range = {50, 1000},
-    Increment = 1,
-    Suffix = "Power",
-    CurrentValue = 50,
-    Flag = "JumpPowerSlider",
-    Callback = function(Value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChildWhichIsA("Humanoid") then
-            char.Humanoid.JumpPower = Value
-        end
-    end,
-})
-
--- Additional Scripts
-local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
-local Divider = Additional_Scripts:CreateDivider()
---delete this code when you add scripts
-local Label = Additional_Scripts:CreateLabel("No Scripts Here Yet!", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
-
--- Trolling Tab
-local Trolling = Window:CreateTab("Trolling", 4483362458)
-
-Trolling:CreateButton({
-    Name = "FE Server-Sided Sword",
-    Callback = function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
-        end)
-        if not success then
-            warn("Failed to load FE Sword: " .. tostring(err))
-        end
-    end
-})
-
--- Chat Admin Commands (runs automatically on hub load)
-task.spawn(function()
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-    local StarterGui = game:GetService("StarterGui")
-    local TeleportService = game:GetService("TeleportService")
-    local LocalPlayer = Players.LocalPlayer
-
-    local Admins = {
-        [LocalPlayer.Name] = true,
-    }
-
-    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.CharacterAdded:Wait()
-    end
-    repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
-
-    local function getHumanoid()
-        return LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    end
-
-    local function getHRP()
-        return LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    end
-
-    local function sendMessage(text, color)
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = text,
-            Color = color or Color3.fromRGB(255, 255, 255),
-            Font = Enum.Font.SourceSansBold,
-            TextSize = 18,
+        setclipboard("https://www.youtube.com/@Infinite_Original")
+        Rayfield:Notify({
+            Title = "Youtube",
+            Content = "Link copied to clipboard!",
+            Duration = 4
         })
     end
+})
+Home_Tab:CreateDivider()
 
-    local function isAdmin(name)
-        return Admins[name] == true
-    end
+-- Command List Display
+Home_Tab:CreateParagraph({
+    Title = "Commands List",
+    Content = table.concat(commandList, "\n")
+})
 
-    local function runCommand(sender, command, param)
-        if not isAdmin(sender.Name) then
-            sendMessage("You do not have permission to use :" .. command, Color3.fromRGB(255, 50, 50))
-            return
+--// Trolling Tab
+local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
+Trolling_Tab:CreateButton({
+    Name = "FE Server Sword",
+    Callback = function()
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        end)
+        if success then
+            sendChat("Server: Command Executed Successfully", Color3.new(0, 1, 0))
+        else
+            sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
         end
+    end
+})
 
-        if command == "kill" then
-            local h = getHumanoid()
-            if h then h.Health = 0 end
+--// FE Chat Commands
+local function onChatted(msg)
+    local cmd = msg:lower()
+    local success, err = pcall(function()
+        if cmd == ":fly" then
+            loadstring(game:HttpGet("https://pastebin.com/raw/c4h1xm4B"))()
 
-        elseif command == "fly" then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+        elseif cmd == ":unfly" then
+            lp.Character.Humanoid.PlatformStand = false
 
-        elseif command == "spin" then
-            local hrp = getHRP()
-            if hrp then
-                task.spawn(function()
-                    while hrp and hrp.Parent do
-                        task.wait()
-                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
-                    end
-                end)
+        elseif cmd == ":spin" then
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root and not root:FindFirstChild("_spin") then
+                local spin = Instance.new("BodyAngularVelocity", root)
+                spin.AngularVelocity = Vector3.new(0, 10, 0)
+                spin.MaxTorque = Vector3.new(0, math.huge, 0)
+                spin.Name = "_spin"
             end
 
-        elseif command == "noclip" then
-            RunService.Stepped:Connect(function()
-                if LocalPlayer.Character then
-                    for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
-                    end
-                end
-            end)
-
-        elseif command == "sword" then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
-
-        elseif command == "walkspeed" and param then
-            local h = getHumanoid()
-            if h then h.WalkSpeed = tonumber(param) or 16 end
-
-        elseif command == "jumppower" and param then
-            local h = getHumanoid()
-            if h then h.JumpPower = tonumber(param) or 50 end
-
-        elseif command == "invis" then
-            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.Transparency = 1
-                end
+        elseif cmd == ":unspin" then
+            local root = lp.Character:FindFirstChild("HumanoidRootPart")
+            if root and root:FindFirstChild("_spin") then
+                root._spin:Destroy()
             end
 
-        elseif command == "rejoin" then
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+        elseif cmd == ":jump" then
+            lp.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
 
-        elseif command == "cmds" then
-            sendMessage("ZEN Infinity Chat Admin Commands:")
-            sendMessage(":kill, :fly, :spin, :noclip, :sword")
-            sendMessage(":walkspeed [num], :jumppower [num], :invis, :rejoin")
-            sendMessage(":admin [playerName] — give admin")
+        elseif cmd == ":kill" then
+            lp.Character:BreakJoints()
 
-        elseif command == "admin" and param then
-            local target = Players:FindFirstChild(param)
-            if target then
-                Admins[target.Name] = true
-                sendMessage(target.Name .. " is now an admin.", Color3.fromRGB(150, 255, 150))
-            else
-                sendMessage("Player not found: " .. param, Color3.fromRGB(255, 50, 50))
+        elseif cmd == ":cmds" then
+            for _, v in ipairs(commandList) do
+                sendChat(v, Color3.new(0.7, 0.9, 1))
             end
 
         else
-            sendMessage("Unknown command: :" .. command, Color3.fromRGB(255, 50, 50))
-        end
-    end
-
-    Players.PlayerChatted:Connect(function(player, msg)
-        if msg:sub(1,1) == ":" then
-            local args = msg:sub(2):split(" ")
-            local command = args[1]
-            local param = args[2]
-            runCommand(player, command, param)
+            error("Unknown command")
         end
     end)
-end)
 
+    if success then
+        sendChat("Server: Command Executed Successfully", Color3.new(0, 1, 0))
+    else
+        sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
+    end
+end
 
+lp.Chatted:Connect(onChatted)
+
+-- Final confirmation
+Rayfield:Notify({
+    Title = "ZEN Infinity HUB",
+    Content = "Loaded successfully!",
+    Duration = 5
+})
