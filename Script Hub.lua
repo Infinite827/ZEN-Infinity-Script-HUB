@@ -24,6 +24,71 @@ local Window = Rayfield:CreateWindow({
         FileName = "ZEN_Config"
     },
 
+-- FE Chat Admin Commands (Auto-Run on Load)
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local LocalPlayer = Players.LocalPlayer
+    local humanoid
+
+    local function updateHumanoid()
+        if LocalPlayer.Character then
+            humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        end
+    end
+
+    LocalPlayer.CharacterAdded:Connect(updateHumanoid)
+    updateHumanoid()
+
+    -- Command functions
+    local commands = {
+        ["kill"] = function()
+            if humanoid then
+                humanoid.Health = 0
+            end
+        end,
+
+        ["fly"] = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+        end,
+
+        ["noclip"] = function()
+            RunService.Stepped:Connect(function()
+                if LocalPlayer.Character then
+                    for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        end,
+
+        ["spin"] = function()
+            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                task.spawn(function()
+                    while true do
+                        task.wait()
+                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
+                    end
+                end)
+            end
+        end,
+    }
+
+    -- Chat listener
+    LocalPlayer.Chatted:Connect(function(msg)
+        if msg:sub(1, 1) == "/" then
+            local cmd = msg:sub(2):lower()
+            if commands[cmd] then
+                pcall(commands[cmd])
+            end
+        end
+    end)
+end)
+
+,
     Discord = {
         Enabled = false,
         Invite = "noinvitelink",
@@ -126,70 +191,69 @@ PlayerTab:CreateSlider({
 --Additional Scripts Tab
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
 
-Additional_Scripts:CreateButton({
-	Name = "Enable Chat Admin Commands (FE)",
-	Callback = function()
-		local Players = game:GetService("Players")
-		local LocalPlayer = Players.LocalPlayer
-		local StarterGui = game:GetService("StarterGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ChatService = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+local UserInputService = game:GetService("UserInputService")
+local humanoid = nil
 
-		if _G.ChatAdminConnected then
-			Rayfield:Notify({
-				Title = "Already Enabled",
-				Content = "Chat commands are already active.",
-				Duration = 4,
-			})
-			return
-		end
-		_G.ChatAdminConnected = true
+-- Updates your humanoid if it changes
+local function updateHumanoid()
+    if LocalPlayer.Character then
+        humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    end
+end
 
-		Rayfield:Notify({
-			Title = "Chat Admin Enabled",
-			Content = "Type /fly, /sword, /kill, /tools in chat.",
-			Duration = 6.5,
-			Image = 4483362458
-		})
+LocalPlayer.CharacterAdded:Connect(updateHumanoid)
+updateHumanoid()
 
-		LocalPlayer.Chatted:Connect(function(msg)
-			local command = msg:lower()
+-- Command functions
+local commands = {
+    ["kill"] = function()
+        if humanoid then
+            humanoid.Health = 0
+        end
+    end,
 
-			if command == "/fly" then
-				local success, err = pcall(function()
-					loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMael7/FE-Fly/main/FEFly.lua"))()
-				end)
-				if not success then
-					warn("Fly script error:", err)
-				end
+    ["fly"] = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+    end,
 
-			elseif command == "/sword" then
-				local success, err = pcall(function()
-					loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
-				end)
-				if not success then
-					warn("Sword script error:", err)
-				end
+    ["noclip"] = function()
+        local noclip = true
+        game:GetService('RunService').Stepped:Connect(function()
+            if noclip and LocalPlayer.Character then
+                for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide == true then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end,
 
-			elseif command == "/kill" then
-				if LocalPlayer.Character then
-					LocalPlayer.Character:BreakJoints()
-				end
+    ["spin"] = function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = LocalPlayer.Character.HumanoidRootPart
+            while true do
+                task.wait()
+                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
+            end
+        end
+    end
+}
 
-			elseif command == "/tools" then
-				for _, tool in ipairs(game:GetService("StarterPack"):GetChildren()) do
-					tool:Clone().Parent = LocalPlayer.Backpack
-				end
-
-			else
-				StarterGui:SetCore("ChatMakeSystemMessage", {
-					Text = "❌ Unknown command: " .. msg,
-					Color = Color3.fromRGB(255, 50, 50),
-					Font = Enum.Font.SourceSansBold,
-					TextSize = 18
-				})
-			end
-		end)
-	end
-})
+-- Chat listener
+LocalPlayer.Chatted:Connect(function(msg)
+    if msg:sub(1,1) == "/" then
+        local cmd = msg:sub(2):lower()
+        if commands[cmd] then
+            commands[cmd]()
+        else
+            warn("Unknown command:", cmd)
+        end
+    end
+end)
 
 
 --Trolling Tab
