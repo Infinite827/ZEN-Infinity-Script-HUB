@@ -33,11 +33,8 @@ Home:CreateButton({
     end
 })
 Home:CreateDivider()
-Home:CreateLabel("Hi, " .. (localPlayer.DisplayName or "Player"))
-Home:CreateLabel("")
-Home:CreateLabel("")
 Home:CreateParagraph({
-    Title = "About ZEN Infinity",
+    Title = "Hi, " .. (localPlayer.DisplayName or "Player"",
     Content = [[
 ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with power‑scripts, funny mods, and unpredictable effects—this hub lets you bend the rules and mess with games hilariously. From fake admin to gameplay effects, you’ll have fun confusing everyone.]]
 })
@@ -142,7 +139,7 @@ local Button = Game_Scripts:CreateButton({
 
 -- ADDITIONAL SCRIPTS TAB (empty for future use)
 local Additional_Scripts = Window:CreateTab("Additional Scripts")
-Additional:CreateDivider()
+Additional_Scripts:CreateDivider()
 
 -- TROLLING TAB
 local Trolling = Window:CreateTab("Trolling")
