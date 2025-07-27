@@ -49,8 +49,7 @@ local Home_Tab = Window:CreateTab("Home")
 local displayName = localPlayer and localPlayer.DisplayName or "Player"
 
 Home_Tab:CreateLabel("Hi, " .. displayName)
-Home_Tab:CreateLabel("")
-Home_Tab:CreateLabel("")
+Home_Tab:CreateLabel("ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny scripts, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins.")
 
 Home_Tab:CreateDivider()
 
@@ -95,9 +94,10 @@ Targets: me, all, others, PlayerName
 })
 
 -- TROLLING TAB
-local Trolling_Tab = Window:CreateTab("Trolling")
+local Trolling_Tab = Window:CreateTab("Trolling", 4483362458) -- Title, Image
+local Divider = Trolling_Tab:CreateDivider()
 
-Trolling_Tab:CreateButton({
+PlayerTab:CreateButton({
     Name = "FE Sword",
     Callback = function()
         -- Paste working FE sword script here if you have one
@@ -105,9 +105,12 @@ Trolling_Tab:CreateButton({
     end
 })
 
+local PlayerTab = Window:CreateTab("Player")-- Title
+local Divider = PlayerTab:CreateDivider()
+
 -- WALKSPEED
 local currentWalkSpeed = 16
-Trolling_Tab:CreateSlider({
+PlayerTab:CreateSlider({
     Name = "WalkSpeed",
     Min = 16,
     Max = 250,
