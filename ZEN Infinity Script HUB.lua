@@ -137,9 +137,16 @@ local Button = Game_Scripts:CreateButton({
    end,
 })
 
--- ADDITIONAL SCRIPTS TAB (empty for future use)
+-- ADDITIONAL SCRIPTS TAB
 local Additional_Scripts = Window:CreateTab("Additional Scripts")
 Additional_Scripts:CreateDivider()
+
+local Button = Game_Scripts:CreateButton({
+   Name = "Chat Bypasser (KEY SYSTEM)",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))
+   end,
+})
 
 -- TROLLING TAB
 local Trolling = Window:CreateTab("Trolling")
