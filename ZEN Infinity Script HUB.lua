@@ -2,6 +2,7 @@
 -- Theme: Amethyst
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
       Rayfield:Notify({
          Title = "Hi",
          Content = "loaded the interface",
