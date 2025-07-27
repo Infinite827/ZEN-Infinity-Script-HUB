@@ -90,11 +90,17 @@ local function GetPlayersFromTarget(target)
                 return {p}
             end
         end
-        -- Partial match
+
+        -- Partial match - collect all matches
+        local matchedPlayers = {}
         for _, p in ipairs(allPlayers) do
             if p.Name:lower():find(target, 1, true) or p.DisplayName:lower():find(target, 1, true) then
-                return {p}
+                table.insert(matchedPlayers, p)
             end
+        end
+
+        if #matchedPlayers > 0 then
+            return matchedPlayers
         end
     end
     return {}
@@ -102,9 +108,10 @@ end
 
 -- Execute commands logic
 local function executeCommand(command, args)
-    local targets = GetPlayersFromTarget(args[1] or "me")
+    local targetArg = args[1] or "me"
+    local targets = GetPlayersFromTarget(targetArg)
     if #targets == 0 then
-        sendChat("Server: No players found for target '" .. (args[1] or "") .. "'", Color3.new(1, 0, 0))
+        sendChat("Server: No players found for target '" .. targetArg .. "'", Color3.new(1, 0, 0))
         return
     end
 
@@ -116,7 +123,7 @@ local function executeCommand(command, args)
         if command == "fly" then
             if humanoid then
                 humanoid.PlatformStand = true
-                -- You can add a fly implementation here
+                -- TODO: Add real fly logic here if needed
             end
         elseif command == "unfly" then
             if humanoid then
