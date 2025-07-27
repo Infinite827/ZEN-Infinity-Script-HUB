@@ -24,32 +24,44 @@ local Window = Rayfield:CreateWindow({
         FileName = "ZEN_Config"
     },
 
--- FE Chat Admin Commands (Auto-Run on Load)
+-- FE/Server Sided Admin Commands
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
     local LocalPlayer = Players.LocalPlayer
-    local humanoid
 
-    local function updateHumanoid()
-        if LocalPlayer.Character then
-            humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        end
+    -- Wait for character to load
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.CharacterAdded:Wait()
+        repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
     end
 
-    LocalPlayer.CharacterAdded:Connect(updateHumanoid)
-    updateHumanoid()
+    local function getHumanoid()
+        return LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    end
 
-    -- Command functions
+    -- Command definitions
     local commands = {
         ["kill"] = function()
-            if humanoid then
-                humanoid.Health = 0
-            end
+            local humanoid = getHumanoid()
+            if humanoid then humanoid.Health = 0 end
         end,
 
         ["fly"] = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+        end,
+
+        ["spin"] = function()
+            local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                task.spawn(function()
+                    while true do
+                        task.wait()
+                        if hrp.Parent == nil then break end
+                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
+                    end
+                end)
+            end
         end,
 
         ["noclip"] = function()
@@ -63,32 +75,20 @@ task.spawn(function()
                 end
             end)
         end,
-
-        ["spin"] = function()
-            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                task.spawn(function()
-                    while true do
-                        task.wait()
-                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
-                    end
-                end)
-            end
-        end,
     }
 
     -- Chat listener
-    LocalPlayer.Chatted:Connect(function(msg)
+    LocalPlayer.Chatted:Connect(function(message)
+        local msg = message:lower()
         if msg:sub(1, 1) == "/" then
-            local cmd = msg:sub(2):lower()
-            if commands[cmd] then
-                pcall(commands[cmd])
+            local command = msg:sub(2)
+            if commands[command] then
+                pcall(commands[command])
             end
         end
     end)
-end)
+end),
 
-,
     Discord = {
         Enabled = false,
         Invite = "noinvitelink",
