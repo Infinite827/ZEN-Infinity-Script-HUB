@@ -55,9 +55,10 @@ local Button = Home_Tab:CreateButton({
 Rayfield:Notify({
    Title = "See You Soon!",
    Content = "unloaded the script hub",
-   Duration = 6.5,
+   Duration = 3.5,
    Image = 4483362458,
 })
+task.wait(1)
    Rayfield:Destroy()
    end,
 })
