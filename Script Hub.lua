@@ -70,6 +70,19 @@ Game_Scripts:CreateButton({
     end
 })
 
+Game_Scripts:CreateButton({
+    Name = "Roleplaying Script",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
+            loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
+        end)
+    end
+})
+
 -- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
@@ -107,40 +120,60 @@ PlayerTab:CreateSlider({
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
 
 Additional_Scripts:CreateButton({
-    Name = "Enable Chat Admin Commands (FE)",
-    Callback = function()
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
+	Name = "Enable Chat Admin Commands (FE)",
+	Callback = function()
+		local Players = game:GetService("Players")
+		local LocalPlayer = Players.LocalPlayer
+		local StarterGui = game:GetService("StarterGui")
 
-        -- Setup Chat Commands
-        LocalPlayer.Chatted:Connect(function(msg)
-            msg = msg:lower()
+		-- Prevent multiple connections
+		if _G.ChatAdminConnected then
+			Rayfield:Notify({
+				Title = "Already Enabled",
+				Content = "Chat admin commands are already running.",
+				Duration = 4,
+			})
+			return
+		end
+		_G.ChatAdminConnected = true
 
-            if msg == "/fly" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite-Store/Fly/main/main.lua"))()
+		-- Feedback
+		Rayfield:Notify({
+			Title = "Chat Admin Enabled",
+			Content = "Use commands like /fly, /sword, /kill in chat.",
+			Duration = 6.5,
+			Image = 4483362458
+		})
 
-            elseif msg == "/kill" then
-                if LocalPlayer.Character then
-                    LocalPlayer.Character:BreakJoints()
-                end
+		-- Command Listener
+		LocalPlayer.Chatted:Connect(function(msg)
+			local command = msg:lower()
 
-            elseif msg == "/sword" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
+			if command == "/fly" then
+				loadstring(game:HttpGet("https://pastebin.com/raw/V5PQy3y0"))()
 
-            elseif msg == "/tools" then
-                for _, tool in ipairs(game:GetService("StarterPack"):GetChildren()) do
-                    tool:Clone().Parent = LocalPlayer.Backpack
-                end
-            end
-        end)
+			elseif command == "/sword" then
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
 
-        Rayfield:Notify({
-            Title = "Chat Admin Enabled",
-            Content = "Type commands like /fly, /sword, /kill, or /tools in chat.",
-            Duration = 6.5,
-            Image = 4483362458
-        })
-    end
+			elseif command == "/kill" then
+				if LocalPlayer.Character then
+					LocalPlayer.Character:BreakJoints()
+				end
+
+			elseif command == "/tools" then
+				for _, tool in ipairs(game:GetService("StarterPack"):GetChildren()) do
+					tool:Clone().Parent = LocalPlayer.Backpack
+				end
+			else
+				StarterGui:SetCore("ChatMakeSystemMessage", {
+					Text = "❌ Unknown command: " .. msg,
+					Color = Color3.fromRGB(255, 50, 50),
+					Font = Enum.Font.SourceSansBold,
+					TextSize = 18
+				})
+			end
+		end)
+	end
 })
 
 
