@@ -341,17 +341,22 @@ HomeTab:CreateButton({
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 local Divider = PlayerTab:CreateDivider()
 
- local Slider = PlayerTab:CreateSlider({
+local Slider = PlayerTab:CreateSlider({
     Name = "WalkSpeed",
-    Range = {16, 1000},
+    Min = 16,
+    Max = 250,
+    Default = 16,
     Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 0,
-    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-     game.Players.LocalPlayer.Character:SetAttribute("SpeedMultiplier", Value)
+    Suffix = " speed",
+    Flag = "WalkSpeed",
+    Callback = function(value)
+        local character = Players.LocalPlayer.Character
+        local humanoid = character and character:FindFirstChildWhichIsA("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
     end,
- })
+})
 
  local Slider = PlayerTab:CreateSlider({
     Name = "Jump Height",
