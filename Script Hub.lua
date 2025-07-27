@@ -24,7 +24,25 @@ local Window = Rayfield:CreateWindow({
         FileName = "ZEN_Config"
     },
 
--- FE/Server Sided Chat Admin Commands
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+
+    KeySystem = false,
+    KeySettings = {
+        Title = "Key System",
+        Subtitle = "Enter Key",
+        Note = "No key required.",
+        FileName = "ZENKey",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"Hello"}
+    }
+})
+
+-- FE/Server Sided Chat Admin Commands (outside of Window config)
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
@@ -42,8 +60,7 @@ task.spawn(function()
             })
         end)
         if not success then
-            -- Fallback: print to console
-            warn("Chat message failed: ".. tostring(err))
+            warn("Chat message failed: " .. tostring(err))
         end
     end
 
@@ -124,7 +141,7 @@ task.spawn(function()
             if commands[cmd] then
                 local success, err = pcall(commands[cmd])
                 if not success then
-                    chatMessage("Error running command: ".. tostring(err))
+                    chatMessage("Error running command: " .. tostring(err))
                 end
             else
                 chatMessage("Unknown command: " .. cmd)
@@ -133,25 +150,7 @@ task.spawn(function()
     end)
 
     chatMessage("FE Chat Commands loaded! Use :cmds to see commands.")
-end),
-
-    Discord = {
-        Enabled = false,
-        Invite = "noinvitelink",
-        RememberJoins = true
-    },
-
-    KeySystem = false,
-    KeySettings = {
-        Title = "Key System",
-        Subtitle = "Enter Key",
-        Note = "No key required.",
-        FileName = "ZENKey",
-        SaveKey = true,
-        GrabKeyFromSite = false,
-        Key = {"Hello"}
-    }
-})
+end)
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
@@ -237,27 +236,11 @@ PlayerTab:CreateSlider({
     end,
 })
 
---Additional Scripts Tab
+-- Additional Scripts Tab
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
 local Divider = Additional_Scripts:CreateDivider()
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local ChatService = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-local UserInputService = game:GetService("UserInputService")
-local humanoid = nil
-
--- Updates your humanoid if it changes
-local function updateHumanoid()
-    if LocalPlayer.Character then
-        humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    end
-end
-
-LocalPlayer.CharacterAdded:Connect(updateHumanoid)
-updateHumanoid()
-
---Trolling Tab
+-- Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
 local Divider = Trolling:CreateDivider()
 
@@ -272,5 +255,6 @@ Trolling:CreateButton({
         end
     end
 })
+
 
 
