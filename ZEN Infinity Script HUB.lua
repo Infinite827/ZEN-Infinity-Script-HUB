@@ -1,4 +1,4 @@
--- ZEN Infinity Script HUB (LocalScript)
+-- ZEN Infinity Script HUB
 -- Theme: Amethyst
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -391,7 +391,7 @@ end)
 
 -- FINAL NOTIFY
 Rayfield:Notify({
-    Title = "ZEN Infinity HUB",
+    Title = "ZEN Infinity Script HUB",
     Content = "Loaded successfully!",
     Duration = 5
 })
