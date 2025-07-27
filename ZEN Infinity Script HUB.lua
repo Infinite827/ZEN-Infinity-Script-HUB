@@ -4,11 +4,12 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
 local DisplayName = LocalPlayer.DisplayName
 
 Rayfield:Notify({
-   Title = "Hi, [DisplayName]",
+   Title = "Hi, " .. DisplayName,
    Content = "Loaded the interface",
    Duration = 2.5,
    Image = 4483362458,
@@ -35,53 +36,9 @@ local Window = Rayfield:CreateWindow({
       RememberJoins = true
    },
    KeySystem = false,
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
-      FileName = "Key",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"Hello"}
-   }
 })
 
-
--- ===== HOME TAB =====
-local Home_Tab = Window:CreateTab("Home", 4483362458)
-Home_Tab:CreateButton({
-   Name = "Unload The ZEN Infinity Script HUB Interface",
-   Callback = function()
-      Rayfield:Notify({
-         Title = "See You Soon!",
-         Content = "Unloading the interface",
-         Duration = 1.5,
-         Image = 4483362458,
-      })
-      wait(1.5)
-      Rayfield:Destroy()
-   end,
-})
-Home_Tab:CreateDivider()
-Home_Tab:CreateLabel("Hi, " .. DisplayName)
-Home_Tab:CreateParagraph({Title = "", Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
-
-Home_Tab:CreateDivider()
-
-Home_Tab:CreateButton({
-    Name = "My Youtube Channel",
-    Callback = function()
-        setclipboard("https://www.youtube.com/@Infinite_Original")
-        Rayfield:Notify({
-            Title = "Youtube",
-            Content = "Link copied to clipboard!",
-            Duration = 4
-        })
-    end
-})
-
-Home_Tab:CreateDivider()
-
+-- Commands list for :cmds
 local commandList = {
     ":fly [target]",
     ":unfly [target]",
@@ -97,154 +54,21 @@ local commandList = {
     ":cmds"
 }
 
-Home_Tab:CreateParagraph({
-    Title = "Commands List",
-    Content = table.concat(commandList, "\n")
-})
-
--- ===== PLAYER TAB =====
-local Player_Tab = Window:CreateTab("Player", 4483362458)
-Player_Tab:CreateDivider()
-
--- Get current WalkSpeed and JumpPower safely
-local function getCurrentHumanoid()
-    if LocalPlayer.Character then
-        return LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    end
-    return nil
+-- Send chat system message safely
+local function sendChat(msg, color)
+    StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = msg,
+        Color = color or Color3.new(1, 1, 1),
+        Font = Enum.Font.SourceSansBold,
+        FontSize = Enum.FontSize.Size24
+    })
 end
 
-local humanoid = getCurrentHumanoid()
-local currentWalkSpeed = humanoid and humanoid.WalkSpeed or 16
-local currentJumpPower = humanoid and humanoid.JumpPower or 50
-
-Player_Tab:CreateSlider({
-   Name = "WalkSpeed",
-   Range = {16, 250},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = currentWalkSpeed,
-   Callback = function(Value)
-      local h = getCurrentHumanoid()
-      if h then
-         h.WalkSpeed = Value
-      end
-   end,
-})
-
-Player_Tab:CreateSlider({
-   Name = "JumpPower",
-   Range = {50, 250},
-   Increment = 1,
-   Suffix = "Power",
-   CurrentValue = currentJumpPower,
-   Callback = function(Value)
-      local h = getCurrentHumanoid()
-      if h then
-         h.JumpPower = Value
-      end
-   end,
-})
-
--- ===== GAME SCRIPTS TAB =====
-local Game_Scripts = Window:CreateTab("Game Scripts")
-Game_Scripts:CreateDivider()
-
-Game_Scripts:CreateButton({
-   Name = "Natural Disaster Survival",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Natural-Disaster-Survival-Katers-NDS-Hub-19533"))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
-})
-
-Game_Scripts:CreateButton({
-   Name = "Doors",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/Robloxexploiterz/Release-Lolhax/refs/heads/main/LX%20Doors%20v3.lua"))()
-   end,
-})
-
-Game_Scripts:CreateButton({
-   Name = "Roleplay Script",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
-})
-
--- ===== ADDITIONAL SCRIPTS TAB =====
-local Additional_Scripts = Window:CreateTab("Additional Scripts")
-Additional_Scripts:CreateDivider()
-
-Additional_Scripts:CreateButton({
-   Name = "Chat Bypasser (KEY SYSTEM(also set language to Ka3ak Tini))",
-   Callback = function()
-      loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "C00lkidd Gui V3",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Infinite Yeild",
-   Callback = function()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Menace Hub (my friends hub)",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Fly Gui V3",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-   end,
-})
-
--- ===== TROLLING TAB =====
-local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateDivider()
-
-Trolling_Tab:CreateButton({
-   Name = "Jerk Off Tool (Universal)",
-   Callback = function()
-      local character = LocalPlayer.Character
-      if not character then return end
-      local humanoid = character:FindFirstChild("Humanoid")
-      if humanoid then
-         if humanoid.RigType == Enum.HumanoidRigType.R15 then
-            loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-         else
-            loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-         end
-      end
-   end,
-})
-
--- ===== CHAT COMMANDS =====
-
+-- Helper: Get players from target string
 local function GetPlayersFromTarget(target)
     target = target:lower()
     local allPlayers = Players:GetPlayers()
-    
+
     if target == "me" then
         return {LocalPlayer}
     elseif target == "all" then
@@ -274,21 +98,25 @@ local function GetPlayersFromTarget(target)
     return {}
 end
 
-local function sendChat(msg, color)
-    game.StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = msg,
-        Color = color or Color3.new(1, 1, 1)
-    })
-end
-
+-- Execute commands logic
 local function executeCommand(command, args)
-    for _, targetPlayer in ipairs(GetPlayersFromTarget(args[1] or "me")) do
+    local targets = GetPlayersFromTarget(args[1] or "me")
+    if #targets == 0 then
+        sendChat("Server: No players found for target '" .. (args[1] or "") .. "'", Color3.new(1, 0, 0))
+        return
+    end
+
+    for _, targetPlayer in ipairs(targets) do
         local char = targetPlayer.Character
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
         local root = char and char:FindFirstChild("HumanoidRootPart")
 
         if command == "fly" then
-            loadstring(game:HttpGet("https://pastebin.com/raw/c4h1xm4B"))()
+            -- Example simple fly (you might want to replace this with your actual fly code)
+            if humanoid then
+                humanoid.PlatformStand = true
+                -- Fly implementation goes here
+            end
         elseif command == "unfly" then
             if humanoid then
                 humanoid.PlatformStand = false
@@ -351,6 +179,7 @@ local function executeCommand(command, args)
     end
 end
 
+-- Listen to chat commands
 LocalPlayer.Chatted:Connect(function(msg)
     if not msg:match("^:") then return end
     local split = msg:sub(2):split(" ")
@@ -373,10 +202,3 @@ LocalPlayer.Chatted:Connect(function(msg)
         sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
     end
 end)
-
--- ===== FINAL NOTIFY =====
-Rayfield:Notify({
-    Title = "ZEN Infinity HUB",
-    Content = "Loaded successfully!",
-    Duration = 5
-})
