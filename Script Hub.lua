@@ -73,13 +73,20 @@ Game_Scripts:CreateButton({
 Game_Scripts:CreateButton({
     Name = "Roleplaying Script",
     Callback = function()
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-            loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
-        end)
+        local function safeLoad(url)
+            local success, result = pcall(function()
+                loadstring(game:HttpGet(url))()
+            end)
+            if not success then
+                warn("Failed to load: " .. url .. "\nError: " .. result)
+            end
+        end
+
+        safeLoad("https://raw.githubusercontent.com/hyperionhax/c00lgui/main/CoolGui.lua")
+        safeLoad("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/main/Free%20Sus%20Missile")
+        safeLoad("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt")
+        safeLoad("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320")
+        safeLoad("https://raw.githubusercontent.com/Synergy-Networks/products/main/BetterBypasser/loader.lua")
     end
 })
 
@@ -126,34 +133,41 @@ Additional_Scripts:CreateButton({
 		local LocalPlayer = Players.LocalPlayer
 		local StarterGui = game:GetService("StarterGui")
 
-		-- Prevent multiple connections
 		if _G.ChatAdminConnected then
 			Rayfield:Notify({
 				Title = "Already Enabled",
-				Content = "Chat admin commands are already running.",
+				Content = "Chat commands are already active.",
 				Duration = 4,
 			})
 			return
 		end
 		_G.ChatAdminConnected = true
 
-		-- Feedback
 		Rayfield:Notify({
 			Title = "Chat Admin Enabled",
-			Content = "Use commands like /fly, /sword, /kill in chat.",
+			Content = "Type /fly, /sword, /kill, /tools in chat.",
 			Duration = 6.5,
 			Image = 4483362458
 		})
 
-		-- Command Listener
 		LocalPlayer.Chatted:Connect(function(msg)
 			local command = msg:lower()
 
 			if command == "/fly" then
-				loadstring(game:HttpGet("https://pastebin.com/raw/V5PQy3y0"))()
+				local success, err = pcall(function()
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMael7/FE-Fly/main/FEFly.lua"))()
+				end)
+				if not success then
+					warn("Fly script error:", err)
+				end
 
 			elseif command == "/sword" then
-				loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
+				local success, err = pcall(function()
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
+				end)
+				if not success then
+					warn("Sword script error:", err)
+				end
 
 			elseif command == "/kill" then
 				if LocalPlayer.Character then
@@ -164,6 +178,7 @@ Additional_Scripts:CreateButton({
 				for _, tool in ipairs(game:GetService("StarterPack"):GetChildren()) do
 					tool:Clone().Parent = LocalPlayer.Backpack
 				end
+
 			else
 				StarterGui:SetCore("ChatMakeSystemMessage", {
 					Text = "❌ Unknown command: " .. msg,
