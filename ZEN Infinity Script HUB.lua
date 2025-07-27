@@ -46,12 +46,12 @@ Home_Tab:CreateButton({
    Callback = function()
       Rayfield:Notify({
          Title = "See You Soon!",
-         Content = "unloaded the interface",
-         Duration = 6.5,
+         Content = "unloading the interface",
+         Duration = 1.5,
          Image = 4483362458,
       })
 
-      wait(3.5)
+      wait(1.5)
       Rayfield:Destroy()
    end,
 })
