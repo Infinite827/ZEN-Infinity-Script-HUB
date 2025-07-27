@@ -3,12 +3,16 @@
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-      Rayfield:Notify({
-         Title = "Hi",
-         Content = "loaded the interface",
-         Duration = 2.5,
-         Image = 4483362458,
-      })
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local DisplayName = LocalPlayer.DisplayName
+
+Rayfield:Notify({
+   Title = "Hi",
+   Content = "Loaded the interface",
+   Duration = 2.5,
+   Image = 4483362458,
+})
 
 local Window = Rayfield:CreateWindow({
    Name = "ZEN Infinity Script HUB",
@@ -42,9 +46,6 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local DisplayName = LocalPlayer.DisplayName
 
 -- ===== HOME TAB =====
 local Home_Tab = Window:CreateTab("Home", 4483362458)
@@ -53,11 +54,10 @@ Home_Tab:CreateButton({
    Callback = function()
       Rayfield:Notify({
          Title = "See You Soon!",
-         Content = "unloading the interface",
+         Content = "Unloading the interface",
          Duration = 1.5,
          Image = 4483362458,
       })
-
       wait(1.5)
       Rayfield:Destroy()
    end,
@@ -102,19 +102,33 @@ Home_Tab:CreateParagraph({
     Content = table.concat(commandList, "\n")
 })
 
-print("Commands List")
-
 -- ===== PLAYER TAB =====
 local Player_Tab = Window:CreateTab("Player", 4483362458)
 Player_Tab:CreateDivider()
+
+-- Get current WalkSpeed and JumpPower safely
+local function getCurrentHumanoid()
+    if LocalPlayer.Character then
+        return LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    end
+    return nil
+end
+
+local humanoid = getCurrentHumanoid()
+local currentWalkSpeed = humanoid and humanoid.WalkSpeed or 16
+local currentJumpPower = humanoid and humanoid.JumpPower or 50
+
 Player_Tab:CreateSlider({
    Name = "WalkSpeed",
    Range = {16, 250},
    Increment = 1,
    Suffix = "Speed",
-   CurrentValue = 16,
+   CurrentValue = currentWalkSpeed,
    Callback = function(Value)
-      LocalPlayer.Character.Humanoid.WalkSpeed = Value
+      local h = getCurrentHumanoid()
+      if h then
+         h.WalkSpeed = Value
+      end
    end,
 })
 
@@ -123,9 +137,12 @@ Player_Tab:CreateSlider({
    Range = {50, 250},
    Increment = 1,
    Suffix = "Power",
-   CurrentValue = 50,
+   CurrentValue = currentJumpPower,
    Callback = function(Value)
-      LocalPlayer.Character.Humanoid.JumpPower = Value
+      local h = getCurrentHumanoid()
+      if h then
+         h.JumpPower = Value
+      end
    end,
 })
 
@@ -209,41 +226,25 @@ Trolling_Tab:CreateDivider()
 Trolling_Tab:CreateButton({
    Name = "Jerk Off Tool (Universal)",
    Callback = function()
-local humanoid = character:FindFirstChild("Humanoid") -- Assuming 'character' is the player's character model
-if humanoid then
-  if humanoid.RigType == Enum.HumanoidRigType.R15 then
-    -- The avatar is R15
-    loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-  else
-    -- The avatar is R6
-    loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-  end
-end,
+      local character = LocalPlayer.Character
+      if not character then return end
+      local humanoid = character:FindFirstChild("Humanoid")
+      if humanoid then
+         if humanoid.RigType == Enum.HumanoidRigType.R15 then
+            loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+         else
+            loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
+         end
+      end
+   end,
 })
 
-local function sendChat(msg, color)
-    game.StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = msg,
-        Color = color or Color3.new(1, 1, 1)
-    })
-end
+-- ===== CHAT COMMANDS =====
 
-LocalPlayer.Chatted:Connect(function(msg)
-    if not msg:match("^:") then return end
-    local split = msg:sub(2):split(" ")
-    local command = split[1]
-
-    if command == "cmds" then
-        for _, c in ipairs(Command List) do
-            sendChat(c, Color3.new(255, 255, 255))
-        end
-    end
-end)
-
--- ===== CHAT COMMAND HANDLER =====
 local function GetPlayersFromTarget(target)
     target = target:lower()
     local allPlayers = Players:GetPlayers()
+    
     if target == "me" then
         return {LocalPlayer}
     elseif target == "all" then
@@ -251,12 +252,21 @@ local function GetPlayersFromTarget(target)
     elseif target == "others" then
         local others = {}
         for _, p in ipairs(allPlayers) do
-            if p ~= LocalPlayer then table.insert(others, p) end
+            if p ~= LocalPlayer then
+                table.insert(others, p)
+            end
         end
         return others
     else
+        -- Exact match first
         for _, p in ipairs(allPlayers) do
             if p.Name:lower() == target or p.DisplayName:lower() == target then
+                return {p}
+            end
+        end
+        -- Partial match
+        for _, p in ipairs(allPlayers) do
+            if p.Name:lower():find(target, 1, true) or p.DisplayName:lower():find(target, 1, true) then
                 return {p}
             end
         end
@@ -280,36 +290,51 @@ local function executeCommand(command, args)
         if command == "fly" then
             loadstring(game:HttpGet("https://pastebin.com/raw/c4h1xm4B"))()
         elseif command == "unfly" then
-            humanoid.PlatformStand = false
+            if humanoid then
+                humanoid.PlatformStand = false
+            end
         elseif command == "spin" then
             if root and not root:FindFirstChild("_spin") then
-                local spin = Instance.new("BodyAngularVelocity", root)
+                local spin = Instance.new("BodyAngularVelocity")
                 spin.AngularVelocity = Vector3.new(0, 10, 0)
                 spin.MaxTorque = Vector3.new(0, math.huge, 0)
                 spin.Name = "_spin"
+                spin.Parent = root
             end
         elseif command == "unspin" then
             if root and root:FindFirstChild("_spin") then
                 root._spin:Destroy()
             end
         elseif command == "jump" then
-            humanoid:ChangeState("Jumping")
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
         elseif command == "kill" then
-            char:BreakJoints()
+            if char then
+                char:BreakJoints()
+            end
         elseif command == "sit" then
-            humanoid.Sit = true
+            if humanoid then
+                humanoid.Sit = true
+            end
         elseif command == "unsit" then
-            humanoid.Sit = false
+            if humanoid then
+                humanoid.Sit = false
+            end
         elseif command == "invisible" then
-            for _, part in ipairs(char:GetChildren()) do
-                if part:IsA("BasePart") then
-                    part.Transparency = 1
+            if char then
+                for _, part in ipairs(char:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.Transparency = 1
+                    end
                 end
             end
         elseif command == "uninvisible" then
-            for _, part in ipairs(char:GetChildren()) do
-                if part:IsA("BasePart") then
-                    part.Transparency = 0
+            if char then
+                for _, part in ipairs(char:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.Transparency = 0
+                    end
                 end
             end
         elseif command == "fling" then
@@ -318,8 +343,10 @@ local function executeCommand(command, args)
                 bv.Velocity = Vector3.new(0, 1000, 0)
                 bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
                 bv.Parent = root
-                game.Debris:AddItem(bv, 0.1)
+                game:GetService("Debris"):AddItem(bv, 0.1)
             end
+        else
+            sendChat("Unknown command: " .. command, Color3.new(1, 0, 0))
         end
     end
 end
