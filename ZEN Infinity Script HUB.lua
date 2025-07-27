@@ -46,10 +46,28 @@ local Window = Rayfield:CreateWindow({
 
 -- HOME TAB
 local Home_Tab = Window:CreateTab("Home")
+
+   Home_Tab:CreateDivider()
+local Button = Tab:CreateButton({
+   Name = "Unload The ZEN Infinity Script HUB Interface",
+   Callback = function()
+--reset admin commands and kill player
+Rayfield:Notify({
+   Title = "See You Soon!",
+   Content = "unloaded the script hub",
+   Duration = 6.5,
+   Image = 4483362458,
+})
+   Rayfield:Destroy()
+   end,
+})
+Home_Tab:CreateDivider()
+
 local displayName = localPlayer and localPlayer.DisplayName or "Player"
 
 Home_Tab:CreateLabel("Hi, " .. displayName)
-Home_Tab:CreateLabel("ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny scripts, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins.")
+local Paragraph = Tab:CreateParagraph({Title = "paragraph", Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny scripts, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
+
 
 Home_Tab:CreateDivider()
 
