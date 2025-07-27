@@ -50,17 +50,18 @@ task.spawn(function()
     local LocalPlayer = Players.LocalPlayer
 
     -- Safe function to send system chat messages
-    local function chatMessage(text)
+    local function chatMessage(text, color)
+        color = color or Color3.fromRGB(0, 255, 255)
         local success, err = pcall(function()
             StarterGui:SetCore("ChatMakeSystemMessage", {
                 Text = text,
-                Color = Color3.fromRGB(0, 255, 255),
+                Color = color,
                 Font = Enum.Font.SourceSansBold,
                 FontSize = Enum.FontSize.Size24
             })
         end)
         if not success then
-            warn("Chat message failed: ".. tostring(err))
+            warn("Chat message failed: " .. tostring(err))
         end
     end
 
@@ -75,15 +76,15 @@ task.spawn(function()
             local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
             if humanoid then
                 humanoid.Health = 0
-                chatMessage("You have been killed.")
+                chatMessage("You have been killed.", Color3.fromRGB(255, 0, 0))
             else
-                chatMessage("Humanoid not found!")
+                chatMessage("Humanoid not found!", Color3.fromRGB(255, 255, 0))
             end
         end,
 
         ["fly"] = function()
             if flyLoaded then
-                chatMessage("Fly GUI already loaded!")
+                chatMessage("Fly GUI already loaded!", Color3.fromRGB(255, 255, 0))
                 return
             end
             local success, err = pcall(function()
@@ -91,9 +92,9 @@ task.spawn(function()
             end)
             if success then
                 flyLoaded = true
-                chatMessage("Fly GUI loaded!")
+                chatMessage("Fly GUI loaded!", Color3.fromRGB(0, 255, 0))
             else
-                chatMessage("Failed to load Fly GUI: " .. tostring(err))
+                chatMessage("Failed to load Fly GUI: " .. tostring(err), Color3.fromRGB(255, 0, 0))
             end
         end,
 
@@ -102,24 +103,24 @@ task.spawn(function()
                 local flyGui = LocalPlayer.PlayerGui:FindFirstChild("FlyGuiV3")
                 if flyGui then
                     flyGui:Destroy()
-                    chatMessage("Fly GUI unloaded.")
+                    chatMessage("Fly GUI unloaded.", Color3.fromRGB(0, 255, 0))
                 else
-                    chatMessage("Fly GUI not found!")
+                    chatMessage("Fly GUI not found!", Color3.fromRGB(255, 255, 0))
                 end
                 flyLoaded = false
             else
-                chatMessage("Fly GUI is not active.")
+                chatMessage("Fly GUI is not active.", Color3.fromRGB(255, 255, 0))
             end
         end,
 
         ["spin"] = function()
             if activeSpinning then
-                chatMessage("Already spinning!")
+                chatMessage("Already spinning!", Color3.fromRGB(255, 255, 0))
                 return
             end
             local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
-                chatMessage("Spinning started.")
+                chatMessage("Spinning started.", Color3.fromRGB(0, 255, 0))
                 activeSpinning = true
                 spinThread = task.spawn(function()
                     while activeSpinning and hrp and hrp.Parent do
@@ -128,25 +129,25 @@ task.spawn(function()
                     end
                 end)
             else
-                chatMessage("HumanoidRootPart not found!")
+                chatMessage("HumanoidRootPart not found!", Color3.fromRGB(255, 255, 0))
             end
         end,
 
         ["unspin"] = function()
             if activeSpinning then
                 activeSpinning = false
-                chatMessage("Spinning stopped.")
+                chatMessage("Spinning stopped.", Color3.fromRGB(0, 255, 0))
             else
-                chatMessage("Not spinning right now.")
+                chatMessage("Not spinning right now.", Color3.fromRGB(255, 255, 0))
             end
         end,
 
         ["noclip"] = function()
             if noclipConnection then
-                chatMessage("Noclip already enabled!")
+                chatMessage("Noclip already enabled!", Color3.fromRGB(255, 255, 0))
                 return
             end
-            chatMessage("Noclip enabled.")
+            chatMessage("Noclip enabled.", Color3.fromRGB(0, 255, 0))
             noclipConnection = RunService.Stepped:Connect(function()
                 if LocalPlayer.Character then
                     for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
@@ -162,9 +163,9 @@ task.spawn(function()
             if noclipConnection then
                 noclipConnection:Disconnect()
                 noclipConnection = nil
-                chatMessage("Noclip disabled.")
+                chatMessage("Noclip disabled.", Color3.fromRGB(0, 255, 0))
             else
-                chatMessage("Noclip is not enabled.")
+                chatMessage("Noclip is not enabled.", Color3.fromRGB(255, 255, 0))
             end
         end,
 
@@ -174,7 +175,7 @@ task.spawn(function()
                 table.insert(list, ":" .. name)
             end
             table.sort(list)
-            chatMessage("Available Commands: " .. table.concat(list, ", "))
+            chatMessage("Available Commands: " .. table.concat(list, ", "), Color3.fromRGB(255, 255, 0))
         end,
     }
 
@@ -184,16 +185,19 @@ task.spawn(function()
             local cmd = msg:sub(2)
             if commands[cmd] then
                 local success, err = pcall(commands[cmd])
-                if not success then
-                    chatMessage("Error running command: ".. tostring(err))
+                if success then
+                    chatMessage("Server: Command Executed Successfully", Color3.fromRGB(0, 255, 0))
+                else
+                    chatMessage("Server: Command Failed To Execute\n" .. tostring(err), Color3.fromRGB(255, 0, 0))
+                    warn("Command error: " .. tostring(err))
                 end
             else
-                chatMessage("Unknown command: " .. cmd)
+                chatMessage("Unknown command: " .. cmd, Color3.fromRGB(255, 0, 0))
             end
         end
     end)
 
-    chatMessage("FE Chat Commands loaded! Use :cmds to see commands.")
+    chatMessage("FE Chat Commands loaded! Use :cmds to see commands.", Color3.fromRGB(0, 255, 255))
 end)
 
 -- Home Tab
@@ -201,14 +205,40 @@ local Home_Tab = Window:CreateTab("Home", 4483362458)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local username = LocalPlayer and LocalPlayer.Name or "Player"
+local displayName = LocalPlayer and LocalPlayer.DisplayName or "Player"
 
-local Paragraph = Home_Tab:CreateParagraph({
-    Title = "Hi, " .. username,
-    Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."
+-- Greeting Label
+Home_Tab:CreateLabel("Hi, " .. displayName)
+local Divider1 = Home_Tab:CreateDivider()
+
+-- YouTube Channel Button
+Home_Tab:CreateButton({
+    Name = "My Youtube Channel",
+    Callback = function()
+        setclipboard("https://www.youtube.com/@Infinite_Original")
+        Rayfield:Notify({
+            Title = "YouTube",
+            Content = "Link copied to clipboard!",
+            Duration = 4
+        })
+    end
 })
-local Divider = Home_Tab:CreateDivider()
 
+local Divider2 = Home_Tab:CreateDivider()
+
+-- Commands List Label
+local commandList = {}
+for name in pairs(commands) do
+    table.insert(commandList, ":" .. name)
+end
+table.sort(commandList)
+
+Home_Tab:CreateParagraph({
+    Title = "Commands List",
+    Content = table.concat(commandList, "\n")
+})
+
+-- Unload Button
 Home_Tab:CreateButton({
     Name = "Unload The ZEN Infinity Script HUB",
     Callback = function()
@@ -305,6 +335,13 @@ Trolling:CreateButton({
         end)
         if not success then
             warn("Failed to load FE Sword: " .. tostring(err))
+            local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = "Server: Command Failed To Execute\n" .. tostring(err),
+                Color = Color3.fromRGB(255, 0, 0),
+                Font = Enum.Font.SourceSansBold,
+                FontSize = Enum.FontSize.Size24
+            })
         else
             -- Show confirmation message
             local StarterGui = game:GetService("StarterGui")
@@ -322,4 +359,7 @@ Trolling:CreateButton({
         end
     end
 })
+
+
+
 
