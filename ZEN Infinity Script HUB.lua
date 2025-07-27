@@ -41,6 +41,20 @@ local DisplayName = LocalPlayer.DisplayName
 
 -- ===== HOME TAB =====
 local Home_Tab = Window:CreateTab("Home", 4483362458)
+local Button = Tab:CreateButton({
+   Name = "Unload The ZEN Infinity Script HUB Interface",
+   Callback = function()
+   Rayfield:Notify({
+   Title = "See You Soon!",
+   Content = "unloaded the interface",
+   Duration = 6.5,
+   Image = 4483362458,
+})
+
+wait(3.5)
+Rayfield:Destroy()
+   end,
+})
 Home_Tab:CreateDivider()
 Home_Tab:CreateLabel("Hi, " .. DisplayName)
 Home_Tab:CreateParagraph({Title = "", Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
@@ -106,10 +120,6 @@ Player_Tab:CreateSlider({
    end,
 })
 
--- ===== TROLLING TAB =====
-local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateDivider()
-
 -- ===== GAME SCRIPTS TAB =====
 local Game_Scripts = Window:CreateTab("Game Scripts")
 Game_Scripts:CreateDivider()
@@ -144,6 +154,17 @@ Game_Scripts:CreateButton({
    end,
 })
 
+-- ===== TROLLING TAB =====
+local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
+Trolling_Tab:CreateDivider()
+
+Trolling_Tab:CreateButton({
+   Name = "Jerk Off Tool (Universal)",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/imalwaysad/universal-gui/refs/heads/main/jerk%20off%20r6"))()
+   end,
+})
+
 -- ===== ADDITIONAL SCRIPTS TAB =====
 local Additional_Scripts = Window:CreateTab("Additional Scripts")
 Additional_Scripts:CreateDivider()
@@ -152,6 +173,41 @@ Additional_Scripts:CreateButton({
    Name = "Chat Bypasser (KEY SYSTEM(also set language to Ka3ak Tini))",
    Callback = function()
       loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
+   end,
+})
+
+Additional_Scripts:CreateButton({
+   Name = "C00lkidd Gui V3",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
+   end,
+})
+
+Additional_Scripts:CreateButton({
+   Name = "Infinite Yeild",
+   Callback = function()
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
+   end,
+})
+
+Additional_Scripts:CreateButton({
+   Name = "Menace Hub (my friends hub)",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
+   end,
+})
+
+Additional_Scripts:CreateButton({
+   Name = "Menace Hub (my friends hub)",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
+   end,
+})
+
+Additional_Scripts:CreateButton({
+   Name = "Fly Gui V3",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
    end,
 })
 
