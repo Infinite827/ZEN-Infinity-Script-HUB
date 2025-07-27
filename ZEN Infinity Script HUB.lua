@@ -1,6 +1,6 @@
 
 -- ZEN Infinity Script HUB - Infinite
-(Amethyst Theme)
+-- (Amethyst Theme)
 
 -- Core Services
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
