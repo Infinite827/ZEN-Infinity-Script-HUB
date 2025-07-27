@@ -4,415 +4,285 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
+local Workspace = game:GetService("Workspace")
 
--- Wait for DisplayName to be ready
 local DisplayName = LocalPlayer.DisplayName or LocalPlayer.Name
 
 Rayfield:Notify({
-   Title = "Hi, " .. DisplayName,
-   Content = "Loading the interface",
-   Duration = 2.5,
-   Image = 4483362458,
+    Title = "Hi, " .. DisplayName,
+    Content = "Loading ZEN Infinity Script HUB...",
+    Duration = 2.5,
+    Image = 4483362458,
 })
 
-local Window = Rayfield:CreateWindow({
-   Name = "ZEN Infinity Script HUB",
-   Icon = 0,
-   LoadingTitle = "ZEN Infinity Script HUB",
-   LoadingSubtitle = "By us.",
-   ShowText = "ZEN Infinity Script HUB",
-   Theme = "Amethyst",
-   ToggleUIKeybind = "K",
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "Folder for ZEN Infinity Script HUB"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-   KeySystem = false,
-})
+-- Helper Functions --
 
--- Commands list for :cmds
-local commandList = {
-    ":fly [target]",
-    ":unfly [target]",
-    ":spin [target]",
-    ":unspin [target]",
-    ":jump [target]",
-    ":kill [target]",
-    ":invisible [target]",
-    ":uninvisible [target]",
-    ":sit [target]",
-    ":unsit [target]",
-    ":fling [target]",
-    ":cmds"
-}
-
--- Send chat system message safely
-local function sendChat(msg, color)
-    StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = msg,
-        Color = color or Color3.new(1, 1, 1),
-        Font = Enum.Font.SourceSansBold,
-        FontSize = Enum.FontSize.Size24
-    })
+-- Get the humanoid and root part safely
+local function getCharacterParts(player)
+    local char = player.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        local root = char:FindFirstChild("HumanoidRootPart")
+        return humanoid, root, char
+    end
+    return nil, nil, nil
 end
 
--- Helper: Get players from target string
-local function GetPlayersFromTarget(target)
-    target = target:lower()
-    local allPlayers = Players:GetPlayers()
-
-    if target == "me" then
-        return {LocalPlayer}
-    elseif target == "all" then
-        return allPlayers
-    elseif target == "others" then
-        local others = {}
-        for _, p in ipairs(allPlayers) do
-            if p ~= LocalPlayer then
-                table.insert(others, p)
+-- Noclip Implementation
+local noclipEnabled = false
+local function setNoclip(enabled)
+    noclipEnabled = enabled
+    if noclipEnabled then
+        Rayfield:Notify({Title = "Noclip", Content = "Enabled", Duration = 2})
+        -- Start noclip loop
+        RunService.Stepped:Connect(function()
+            if noclipEnabled and LocalPlayer.Character then
+                for _, part in pairs(LocalPlayer.Character:GetChildren()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
             end
-        end
-        return others
+        end)
     else
-        -- Exact match first
-        for _, p in ipairs(allPlayers) do
-            if p.Name:lower() == target or p.DisplayName:lower() == target then
-                return {p}
+        -- Re-enable collisions
+        if LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
             end
         end
+        Rayfield:Notify({Title = "Noclip", Content = "Disabled", Duration = 2})
+    end
+end
 
-        -- Partial match - collect all matches
-        local matchedPlayers = {}
-        for _, p in ipairs(allPlayers) do
-            if p.Name:lower():find(target, 1, true) or p.DisplayName:lower():find(target, 1, true) then
-                table.insert(matchedPlayers, p)
+-- ESP Implementation
+local espBoxes = {}
+local function createESPBox(player)
+    local box = Drawing.new("Square")
+    box.Color = Color3.new(1, 0, 0)
+    box.Thickness = 2
+    box.Filled = false
+    box.Transparency = 1
+    return box
+end
+
+local espEnabled = false
+local function toggleESP(enabled)
+    espEnabled = enabled
+    if not espEnabled then
+        -- Remove all ESP boxes
+        for _, box in pairs(espBoxes) do
+            box:Remove()
+        end
+        espBoxes = {}
+        Rayfield:Notify({Title = "ESP", Content = "Disabled", Duration = 2})
+    else
+        -- Create ESP boxes for all players except local
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                if not espBoxes[player] then
+                    espBoxes[player] = createESPBox(player)
+                end
             end
         end
+        Rayfield:Notify({Title = "ESP", Content = "Enabled", Duration = 2})
+    end
+end
 
-        if #matchedPlayers > 0 then
-            return matchedPlayers
+-- Update ESP boxes every frame
+RunService.RenderStepped:Connect(function()
+    if not espEnabled then return end
+    local camera = Workspace.CurrentCamera
+    for player, box in pairs(espBoxes) do
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local root = char.HumanoidRootPart
+            local pos, onScreen = camera:WorldToViewportPoint(root.Position)
+            if onScreen then
+                local size = Vector3.new(4, 6, 1) -- Approximate size
+                local topLeft = camera:WorldToViewportPoint(root.Position + Vector3.new(-size.X/2, size.Y/2, 0))
+                local bottomRight = camera:WorldToViewportPoint(root.Position + Vector3.new(size.X/2, -size.Y/2, 0))
+                box.Position = Vector2.new(topLeft.X, topLeft.Y)
+                box.Size = Vector2.new(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
+                box.Visible = true
+            else
+                box.Visible = false
+            end
+        else
+            if box then
+                box.Visible = false
+            end
         end
     end
-    return {}
-end
+end)
 
--- Execute commands logic
-local function executeCommand(command, args)
-    local targetArg = args[1] or "me"
-    local targets = GetPlayersFromTarget(targetArg)
-    if #targets == 0 then
-        sendChat("Server: No players found for target '" .. targetArg .. "'", Color3.new(1, 0, 0))
+-- Speed Burst Implementation
+local speedBurstActive = false
+local speedBurstCooldown = false
+local speedBurstDuration = 3 -- seconds
+local speedBurstCooldownTime = 10 -- seconds
+
+local function speedBurst()
+    if speedBurstCooldown then
+        Rayfield:Notify({Title = "Speed Burst", Content = "On cooldown!", Duration = 2})
+        return
+    end
+    local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then
+        Rayfield:Notify({Title = "Speed Burst", Content = "No humanoid found!", Duration = 2})
         return
     end
 
-    for _, targetPlayer in ipairs(targets) do
-        local char = targetPlayer.Character
-        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-        local root = char and char:FindFirstChild("HumanoidRootPart")
+    speedBurstCooldown = true
+    local originalSpeed = humanoid.WalkSpeed
+    humanoid.WalkSpeed = originalSpeed * 3
+    Rayfield:Notify({Title = "Speed Burst", Content = "Activated!", Duration = speedBurstDuration})
 
-        if command == "fly" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-            end
-        elseif command == "unfly" then
-            if humanoid then
-                humanoid.PlatformStand = false
-            end
-        elseif command == "spin" then
-            if root and not root:FindFirstChild("_spin") then
-                local spin = Instance.new("BodyAngularVelocity")
-                spin.AngularVelocity = Vector3.new(0, 10, 0)
-                spin.MaxTorque = Vector3.new(0, math.huge, 0)
-                spin.Name = "_spin"
-                spin.Parent = root
-            end
-        elseif command == "unspin" then
-            if root and root:FindFirstChild("_spin") then
-                root._spin:Destroy()
-            end
-        elseif command == "jump" then
-            if humanoid then
-                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        elseif command == "kill" then
-            if char then
-                char:BreakJoints()
-            end
-        elseif command == "sit" then
-            if humanoid then
-                humanoid.Sit = true
-            end
-        elseif command == "unsit" then
-            if humanoid then
-                humanoid.Sit = false
-            end
-        elseif command == "invisible" then
-            if char then
-                for _, part in ipairs(char:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.Transparency = 1
-                    end
-                end
-            end
-        elseif command == "uninvisible" then
-            if char then
-                for _, part in ipairs(char:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.Transparency = 0
-                    end
-                end
-            end
-        elseif command == "fling" then
-            if root then
-                local bv = Instance.new("BodyVelocity")
-                bv.Velocity = Vector3.new(0, 1000, 0)
-                bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-                bv.Parent = root
-                game:GetService("Debris"):AddItem(bv, 0.1)
-            end
-        else
-            sendChat("Unknown command: " .. command, Color3.new(1, 0, 0))
+    task.delay(speedBurstDuration, function()
+        if humanoid then
+            humanoid.WalkSpeed = originalSpeed
         end
-    end
+    end)
+
+    task.delay(speedBurstCooldownTime, function()
+        speedBurstCooldown = false
+        Rayfield:Notify({Title = "Speed Burst", Content = "Cooldown ended!", Duration = 2})
+    end)
 end
 
--- UI Tabs
+-- UI Setup --
 
--- HOME TAB
-local Home_Tab = Window:CreateTab("Home", 4483362458)
-Home_Tab:CreateButton({
-   Name = "Unload The ZEN Infinity Script HUB Interface",
-   Callback = function()
-      Rayfield:Notify({
-         Title = "See you soon!, " .. DisplayName,
-         Content = "Unloading the interface",
-         Duration = 1.5,
-         Image = 4483362458,
-      })
-      wait(1.5)
-      Rayfield:Destroy()
-   end,
+local Window = Rayfield:CreateWindow({
+    Name = "ZEN Infinity Script HUB",
+    Icon = 4483362458,
+    LoadingTitle = "ZEN Infinity Script HUB",
+    LoadingSubtitle = "By InfiniteMaster",
+    Theme = "Amethyst",
+    ToggleUIKeybind = "K",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "ZEN Infinity Config"
+    }
 })
 
-Home_Tab:CreateDivider()
-
+-- Home Tab --
+local Home_Tab = Window:CreateTab("Home", 4483362458)
 Home_Tab:CreateLabel("Hi, " .. DisplayName)
 Home_Tab:CreateParagraph({
-    Title = "",
-    Content = "ZEN Infinity Script HUB is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."
+    Title = "Welcome",
+    Content = "Welcome to ZEN Infinity Script HUB! Use tabs to explore features."
 })
-
-Home_Tab:CreateDivider()
 
 Home_Tab:CreateButton({
     Name = "My Youtube Channel",
     Callback = function()
         setclipboard("https://www.youtube.com/@Infinite_Original")
-        Rayfield:Notify({
-            Title = "Youtube Channel",
-            Content = "Link copied to clipboard!",
-            Duration = 4
-        })
+        Rayfield:Notify({Title = "YouTube Channel", Content = "Link copied to clipboard!", Duration = 3})
     end
 })
 
-Home_Tab:CreateDivider()
-
-Home_Tab:CreateParagraph({
-    Title = "Commands List",
-    Content = table.concat(commandList, "\n")
-})
-
--- PLAYER TAB
+-- Player Tab --
 local Player_Tab = Window:CreateTab("Player", 4483362458)
-Player_Tab:CreateDivider()
 
--- Get current humanoid safely
-local function getCurrentHumanoid()
-    if LocalPlayer.Character then
-        return LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Player_Tab:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false,
+    Callback = function(value)
+        setNoclip(value)
     end
-    return nil
-end
-
-local humanoid = getCurrentHumanoid()
-local currentWalkSpeed = humanoid and humanoid.WalkSpeed or 16
-local currentJumpPower = humanoid and humanoid.JumpPower or 50
-local currentHealth = humanoid and humanoid.Health or 100
-
-Player_Tab:CreateSlider({
-   Name = "WalkSpeed",
-   Range = {16, 250},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = currentWalkSpeed,
-   Callback = function(Value)
-      local h = getCurrentHumanoid()
-      if h then
-         h.WalkSpeed = Value
-      end
-   end,
 })
 
-Player_Tab:CreateSlider({
-   Name = "JumpPower",
-   Range = {50, 250},
-   Increment = 1,
-   Suffix = "Power",
-   CurrentValue = currentJumpPower,
-   Callback = function(Value)
-      local h = getCurrentHumanoid()
-      if h then
-         h.JumpPower = Value
-      end
-   end,
+Player_Tab:CreateButton({
+    Name = "Speed Burst",
+    Callback = function()
+        speedBurst()
+    end
 })
 
-Player_Tab:CreateSlider({
-   Name = "Health",
-   Range = {1, 1000000},
-   Increment = 1,
-   Suffix = "HP",
-   CurrentValue = currentHealth,
-   Callback = function(Value)
-      local h = getCurrentHumanoid()
-      if h then
-         h.MaxHealth = Value
-         h.Health = Value
-      end
-   end,
+-- Visual & FX Tab --
+local VisualFX_Tab = Window:CreateTab("Visual & FX", 4483362458)
+-- Placeholder for other toggles
+
+-- Chat Tools Tab --
+local ChatTools_Tab = Window:CreateTab("Chat Tools", 4483362458)
+-- Placeholder for chat tools buttons
+
+-- Utilities Tab --
+local Utilities_Tab = Window:CreateTab("Utilities", 4483362458)
+
+Utilities_Tab:CreateToggle({
+    Name = "ESP",
+    CurrentValue = false,
+    Callback = function(value)
+        toggleESP(value)
+    end
 })
 
--- GAME SCRIPTS TAB
-local Game_Scripts = Window:CreateTab("Game Scripts")
-Game_Scripts:CreateDivider()
-
-Game_Scripts:CreateButton({
-   Name = "Natural Disaster Survival",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Natural-Disaster-Survival-Katers-NDS-Hub-19533"))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
+Utilities_Tab:CreateButton({
+    Name = "Copy Game ID",
+    Callback = function()
+        setclipboard(tostring(game.PlaceId))
+        Rayfield:Notify({Title = "Game ID", Content = "Copied to clipboard!", Duration = 3})
+    end
 })
 
-Game_Scripts:CreateButton({
-   Name = "Doors",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/Robloxexploiterz/Release-Lolhax/refs/heads/main/LX%20Doors%20v3.lua"))()
-   end,
-})
-
-Game_Scripts:CreateButton({
-   Name = "Roleplay Script",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
-})
-
--- ADDITIONAL SCRIPTS TAB
-local Additional_Scripts = Window:CreateTab("Additional Scripts")
-Additional_Scripts:CreateDivider()
-
-Additional_Scripts:CreateButton({
-   Name = "Chat Bypasser (KEY SYSTEM(also set language to Ka3ak Tini))",
-   Callback = function()
-      loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "C00lkidd Gui V3",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Infinite Yeild",
-   Callback = function()
-      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Menace Hub (my friends hub)",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
-   end,
-})
-
-Additional_Scripts:CreateButton({
-   Name = "Fly Gui V3",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-   end,
-})
-
--- TROLLING TAB
+-- Trolling Tab --
 local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateDivider()
+-- Placeholder for trolling features
 
-Trolling_Tab:CreateButton({
-   Name = "Jerk Off Tool (Universal)",
-   Callback = function()
-      local character = LocalPlayer.Character
-      if not character then return end
-      local humanoid = character:FindFirstChild("Humanoid")
-      if humanoid then
-         if humanoid.RigType == Enum.HumanoidRigType.R15 then
-            loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-         else
-            loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-         end
-      end
-   end,
-})
-
--- CHAT COMMAND HANDLING
+-- Chat Command Handler (basic) --
 
 LocalPlayer.Chatted:Connect(function(msg)
     if not msg:match("^:") then return end
-    local split = msg:sub(2):split(" ")
-    local command = split[1]
-    table.remove(split, 1)
+    local args = msg:sub(2):split(" ")
+    local cmd = args[1]:lower()
+    table.remove(args, 1)
 
     local success, err = pcall(function()
-        if command == "cmds" then
-            for _, c in ipairs(commandList) do
-                sendChat(c, Color3.new(1, 1, 0))
-            end
+        if cmd == "fly" then
+            -- Fly code placeholder
+            Rayfield:Notify({Title="Command", Content="Fly command not implemented yet", Duration=3})
+        elseif cmd == "noclip" then
+            setNoclip(true)
+        elseif cmd == "unnoclip" then
+            setNoclip(false)
+        elseif cmd == "esp" then
+            toggleESP(true)
+        elseif cmd == "unesp" then
+            toggleESP(false)
+        elseif cmd == "speedburst" then
+            speedBurst()
         else
-            executeCommand(command, split)
+            Rayfield:Notify({Title="Unknown Command", Content="'"..cmd.."' is not recognized.", Duration=3})
         end
     end)
 
     if success then
         sendChat("Server: Command Executed Successfully", Color3.new(0, 1, 0))
     else
-        sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
+        sendChat("Server: Command Failed To Execute\n".. tostring(err), Color3.new(1, 0, 0))
     end
 end)
 
--- FINAL NOTIFY
+-- Utility function to send chat messages
+function sendChat(msg, color)
+    StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = msg,
+        Color = color or Color3.new(1,1,1),
+        Font = Enum.Font.SourceSansBold,
+        FontSize = Enum.FontSize.Size24
+    })
+end
+
 Rayfield:Notify({
     Title = "ZEN Infinity Script HUB",
     Content = "Loaded successfully!",
-    Duration = 5
+    Duration = 4
 })
