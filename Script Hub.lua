@@ -24,54 +24,77 @@ local Window = Rayfield:CreateWindow({
         FileName = "ZEN_Config"
     },
 
--- FE/Server Sided Admin Commands
+-- FE/Server Sided Chat Admin Commands
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
     local StarterGui = game:GetService("StarterGui")
     local LocalPlayer = Players.LocalPlayer
 
-    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.CharacterAdded:Wait()
-        repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
-    end
-
-    local function getHumanoid()
-        return LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    end
-
+    -- Safe function to send system chat messages
     local function chatMessage(text)
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = text,
-            Color = Color3.fromRGB(0, 255, 255),
-            Font = Enum.Font.SourceSansBold,
-            FontSize = Enum.FontSize.Size24
-        })
+        local success, err = pcall(function()
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = text,
+                Color = Color3.fromRGB(0, 255, 255),
+                Font = Enum.Font.SourceSansBold,
+                FontSize = Enum.FontSize.Size24
+            })
+        end)
+        if not success then
+            -- Fallback: print to console
+            warn("Chat message failed: ".. tostring(err))
+        end
+    end
+
+    -- Prevent multiple fly GUIs by checking if one exists
+    local function loadFlyGui()
+        if LocalPlayer.PlayerGui:FindFirstChild("FlyGuiV3") then
+            chatMessage("Fly GUI already loaded!")
+            return
+        end
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+        end)
+        if not success then
+            chatMessage("Failed to load Fly GUI: " .. tostring(err))
+        else
+            chatMessage("Fly GUI loaded!")
+        end
     end
 
     local commands = {
         ["kill"] = function()
-            local h = getHumanoid()
-            if h then h.Health = 0 end
+            local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Health = 0
+                chatMessage("You have been killed.")
+            else
+                chatMessage("Humanoid not found!")
+            end
         end,
 
         ["fly"] = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+            loadFlyGui()
         end,
 
         ["spin"] = function()
             local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
+                chatMessage("Spinning started.")
                 task.spawn(function()
                     while hrp and hrp.Parent do
                         task.wait()
-                        hrp.CFrame *= CFrame.Angles(0, math.rad(10), 0)
+                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
                     end
                 end)
+            else
+                chatMessage("HumanoidRootPart not found!")
             end
         end,
 
         ["noclip"] = function()
+            chatMessage("Noclip enabled.")
             RunService.Stepped:Connect(function()
                 if LocalPlayer.Character then
                     for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
@@ -99,10 +122,17 @@ task.spawn(function()
         if msg:sub(1, 1) == ":" then
             local cmd = msg:sub(2)
             if commands[cmd] then
-                pcall(commands[cmd])
+                local success, err = pcall(commands[cmd])
+                if not success then
+                    chatMessage("Error running command: ".. tostring(err))
+                end
+            else
+                chatMessage("Unknown command: " .. cmd)
             end
         end
     end)
+
+    chatMessage("FE Chat Commands loaded! Use :cmds to see commands.")
 end),
 
     Discord = {
