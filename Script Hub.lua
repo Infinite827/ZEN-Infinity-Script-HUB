@@ -1,4 +1,3 @@
-
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
@@ -42,27 +41,24 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- FE/Server Sided Chat Admin Commands (outside of Window config)
+-- Helper function to send system chat messages
+local StarterGui = game:GetService("StarterGui")
+local function chatMessage(text)
+    pcall(function()
+        StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = text,
+            Color = Color3.fromRGB(0, 255, 255),
+            Font = Enum.Font.SourceSansBold,
+            FontSize = Enum.FontSize.Size24
+        })
+    end)
+end
+
+-- FE/Server Sided Chat Admin Commands
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local StarterGui = game:GetService("StarterGui")
     local LocalPlayer = Players.LocalPlayer
-
-    -- Safe function to send system chat messages
-    local function chatMessage(text)
-        local success, err = pcall(function()
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = text,
-                Color = Color3.fromRGB(0, 255, 255),
-                Font = Enum.Font.SourceSansBold,
-                FontSize = Enum.FontSize.Size24
-            })
-        end)
-        if not success then
-            warn("Chat message failed: " .. tostring(err))
-        end
-    end
 
     -- Prevent multiple fly GUIs by checking if one exists
     local function loadFlyGui()
@@ -129,8 +125,8 @@ task.spawn(function()
                 table.insert(list, ":" .. name)
             end
             table.sort(list)
-            chatMessage("Available Commands:")
-            chatMessage(table.concat(list, ", "))
+            local msg = "Available Commands: " .. table.concat(list, ", ")
+            chatMessage(msg)
         end,
     }
 
@@ -154,7 +150,7 @@ end)
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-local Divider = Home_Tab:CreateDivider()
+Home_Tab:CreateDivider()
 
 Home_Tab:CreateButton({
     Name = "Unload The ZEN Infinity Script HUB",
@@ -165,7 +161,7 @@ Home_Tab:CreateButton({
 
 -- Game Scripts Tab
 local Game_Scripts = Window:CreateTab("Game Scripts", 4483362458)
-local Divider = Game_Scripts:CreateDivider()
+Game_Scripts:CreateDivider()
 
 Game_Scripts:CreateButton({
     Name = "Natural Disaster Survival Scripts",
@@ -204,7 +200,7 @@ Game_Scripts:CreateButton({
 
 -- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
-local Divider = PlayerTab:CreateDivider()
+PlayerTab:CreateDivider()
 
 PlayerTab:CreateSlider({
     Name = "WalkSpeed",
@@ -238,11 +234,11 @@ PlayerTab:CreateSlider({
 
 -- Additional Scripts Tab
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
-local Divider = Additional_Scripts:CreateDivider()
+Additional_Scripts:CreateDivider()
 
 -- Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
-local Divider = Trolling:CreateDivider()
+Trolling:CreateDivider()
 
 Trolling:CreateButton({
     Name = "FE Server-Sided Sword",
@@ -250,11 +246,14 @@ Trolling:CreateButton({
         local success, err = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Tools/Sword.lua"))()
         end)
-        if not success then
-            warn("Failed to load FE Sword: " .. tostring(err))
+        if success then
+            chatMessage("FE Server-Sided Sword loaded successfully!")
+        else
+            chatMessage("Failed to load FE Sword: " .. tostring(err))
         end
     end
 })
+
 
 
 
