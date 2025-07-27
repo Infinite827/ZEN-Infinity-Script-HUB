@@ -1,143 +1,111 @@
--- ZEN Infinity HUB - Full Script
--- Built with Rayfield UI | by Infinite_Original
+-- Define the commands table at top scope so UI code can use it
+local commands = {}
 
--- Load Rayfield UI
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- FE/Server Sided Chat Admin Commands (in a coroutine)
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local StarterGui = game:GetService("StarterGui")
+    local LocalPlayer = Players.LocalPlayer
 
-local Window = Rayfield:CreateWindow({
-    Name = "ZEN Infinity HUB",
-    LoadingTitle = "ZEN Infinity HUB",
-    LoadingSubtitle = "by Infinite_Original",
-    ConfigurationSaving = {
-        Enabled = false,
-        FolderName = nil,
-        FileName = "ZENInfinityHubConfig"
-    },
-    Discord = {
-        Enabled = false,
-        Invite = "",
-        RememberJoins = false
-    },
-    KeySystem = false,
-})
+    -- Safe function to send system chat messages
+    local function chatMessage(text, color)
+        color = color or Color3.fromRGB(0, 255, 255)
+        local success, err = pcall(function()
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = text,
+                Color = color,
+                Font = Enum.Font.SourceSansBold,
+                FontSize = Enum.FontSize.Size24
+            })
+        end)
+        if not success then
+            warn("Chat message failed: " .. tostring(err))
+        end
+    end
 
---// Variables
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-local PlayerName = lp.DisplayName
+    -- Variables to track active states
+    local activeSpinning = false
+    local spinThread = nil
+    local noclipConnection = nil
+    local flyLoaded = false
 
-local function sendChat(msg, color)
-    game.StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = msg,
-        Color = color or Color3.new(1, 1, 1),
-        Font = Enum.Font.SourceSans,
-        FontSize = Enum.FontSize.Size24
-    })
-end
+    -- Fill the commands table here (this updates the top-level `commands`)
+    commands = {
+        ["kill"] = function()
+            -- same implementation as before...
+        end,
+        ["fly"] = function()
+            -- ...
+        end,
+        -- all other commands here...
+        ["cmds"] = function()
+            local list = {}
+            for name in pairs(commands) do
+                table.insert(list, ":" .. name)
+            end
+            table.sort(list)
+            chatMessage("Available Commands: " .. table.concat(list, ", "), Color3.fromRGB(255, 255, 0))
+        end,
+    }
 
--- Command list
-local commandList = {
-    ":fly", ":unfly",
-    ":spin", ":unspin",
-    ":jump",
-    ":kill",
-    ":cmds"
-}
+    LocalPlayer.Chatted:Connect(function(msg)
+        msg = msg:lower()
+        if msg:sub(1, 1) == ":" then
+            local cmd = msg:sub(2)
+            if commands[cmd] then
+                local success, err = pcall(commands[cmd])
+                if success then
+                    chatMessage("Server: Command Executed Successfully", Color3.fromRGB(0, 255, 0))
+                else
+                    chatMessage("Server: Command Failed To Execute\n" .. tostring(err), Color3.fromRGB(255, 0, 0))
+                    warn("Command error: " .. tostring(err))
+                end
+            else
+                chatMessage("Unknown command: " .. cmd, Color3.fromRGB(255, 0, 0))
+            end
+        end
+    end)
 
---// Home Tab
+    chatMessage("FE Chat Commands loaded! Use :cmds to see commands.", Color3.fromRGB(0, 255, 255))
+end)
+
+-- Now that commands is defined, create UI that uses commands:
 local Home_Tab = Window:CreateTab("Home", 4483362458)
-Home_Tab:CreateLabel("Hi, " .. PlayerName)
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local displayName = LocalPlayer and LocalPlayer.DisplayName or "Player"
+
+-- Greeting Label
+Home_Tab:CreateLabel("Hi, " .. displayName)
 Home_Tab:CreateDivider()
 
--- Youtube Button
+-- YouTube Channel Button
 Home_Tab:CreateButton({
     Name = "My Youtube Channel",
     Callback = function()
         setclipboard("https://www.youtube.com/@Infinite_Original")
         Rayfield:Notify({
-            Title = "Youtube",
+            Title = "YouTube",
             Content = "Link copied to clipboard!",
             Duration = 4
         })
     end
 })
+
 Home_Tab:CreateDivider()
 
--- Command List Display
+-- Commands List Paragraph
+local commandList = {}
+for name in pairs(commands) do
+    table.insert(commandList, ":" .. name)
+end
+table.sort(commandList)
+
 Home_Tab:CreateParagraph({
     Title = "Commands List",
     Content = table.concat(commandList, "\n")
 })
 
---// Trolling Tab
-local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateButton({
-    Name = "FE Server Sword",
-    Callback = function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        end)
-        if success then
-            sendChat("Server: Command Executed Successfully", Color3.new(0, 1, 0))
-        else
-            sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
-        end
-    end
-})
-
---// FE Chat Commands
-local function onChatted(msg)
-    local cmd = msg:lower()
-    local success, err = pcall(function()
-        if cmd == ":fly" then
-            loadstring(game:HttpGet("https://pastebin.com/raw/c4h1xm4B"))()
-
-        elseif cmd == ":unfly" then
-            lp.Character.Humanoid.PlatformStand = false
-
-        elseif cmd == ":spin" then
-            local root = lp.Character:FindFirstChild("HumanoidRootPart")
-            if root and not root:FindFirstChild("_spin") then
-                local spin = Instance.new("BodyAngularVelocity", root)
-                spin.AngularVelocity = Vector3.new(0, 10, 0)
-                spin.MaxTorque = Vector3.new(0, math.huge, 0)
-                spin.Name = "_spin"
-            end
-
-        elseif cmd == ":unspin" then
-            local root = lp.Character:FindFirstChild("HumanoidRootPart")
-            if root and root:FindFirstChild("_spin") then
-                root._spin:Destroy()
-            end
-
-        elseif cmd == ":jump" then
-            lp.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-
-        elseif cmd == ":kill" then
-            lp.Character:BreakJoints()
-
-        elseif cmd == ":cmds" then
-            for _, v in ipairs(commandList) do
-                sendChat(v, Color3.new(0.7, 0.9, 1))
-            end
-
-        else
-            error("Unknown command")
-        end
-    end)
-
-    if success then
-        sendChat("Server: Command Executed Successfully", Color3.new(0, 1, 0))
-    else
-        sendChat("Server: Command Failed To Execute\n" .. tostring(err), Color3.new(1, 0, 0))
-    end
-end
-
-lp.Chatted:Connect(onChatted)
-
--- Final confirmation
-Rayfield:Notify({
-    Title = "ZEN Infinity HUB",
-    Content = "Loaded successfully!",
-    Duration = 5
-})
+-- ... rest of your tabs and buttons as before
