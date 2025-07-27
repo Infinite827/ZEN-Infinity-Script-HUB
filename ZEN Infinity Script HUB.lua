@@ -41,8 +41,12 @@ local DisplayName = LocalPlayer.DisplayName
 
 -- ===== HOME TAB =====
 local Home_Tab = Window:CreateTab("Home", 4483362458)
+Home_Tab:CreateDivider()
 Home_Tab:CreateLabel("Hi, " .. DisplayName)
-Home_Tab:CreateParagraph({Title = "", Content = "\n\n"})
+Home_Tab:CreateParagraph({Title = "", Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny mods, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
+
+Home_Tab:CreateDivider()
+
 Home_Tab:CreateButton({
     Name = "My Youtube Channel",
     Callback = function()
@@ -54,6 +58,7 @@ Home_Tab:CreateButton({
         })
     end
 })
+
 Home_Tab:CreateDivider()
 
 local commandList = {
@@ -78,6 +83,7 @@ Home_Tab:CreateParagraph({
 
 -- ===== PLAYER TAB =====
 local Player_Tab = Window:CreateTab("Player", 4483362458)
+PlayerTab:CreateDivider()
 Player_Tab:CreateSlider({
    Name = "WalkSpeed",
    Range = {16, 250},
@@ -102,25 +108,7 @@ Player_Tab:CreateSlider({
 
 -- ===== TROLLING TAB =====
 local Trolling_Tab = Window:CreateTab("Trolling", 4483362458)
-Trolling_Tab:CreateButton({
-    Name = "FE Server Sword",
-    Callback = function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        end)
-        if success then
-            game.StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "Server: Command Executed Successfully",
-                Color = Color3.new(0, 1, 0)
-            })
-        else
-            game.StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "Server: Command Failed To Execute\n" .. tostring(err),
-                Color = Color3.new(1, 0, 0)
-            })
-        end
-    end
-})
+Trolling_Tab:CreateDivider()
 
 -- ===== GAME SCRIPTS TAB =====
 local Game_Scripts = Window:CreateTab("Game Scripts")
@@ -161,9 +149,9 @@ local Additional_Scripts = Window:CreateTab("Additional Scripts")
 Additional_Scripts:CreateDivider()
 
 Additional_Scripts:CreateButton({
-   Name = "Chat Bypasser (KEY SYSTEM)",
+   Name = "Chat Bypasser (KEY SYSTEM(also set language to Ka3ak Tini))",
    Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))()
+      loadstring(game:HttpGet("https://github.com/Synergy-Networks/products/raw/main/BetterBypasser/loader.lua"))()
    end,
 })
 
