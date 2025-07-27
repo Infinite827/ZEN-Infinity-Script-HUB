@@ -28,9 +28,9 @@ local Window = Rayfield:CreateWindow({
 task.spawn(function()
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
+    local StarterGui = game:GetService("StarterGui")
     local LocalPlayer = Players.LocalPlayer
 
-    -- Wait for character to load
     if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.CharacterAdded:Wait()
         repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -40,11 +40,19 @@ task.spawn(function()
         return LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     end
 
-    -- Command definitions
+    local function chatMessage(text)
+        StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = text,
+            Color = Color3.fromRGB(0, 255, 255),
+            Font = Enum.Font.SourceSansBold,
+            FontSize = Enum.FontSize.Size24
+        })
+    end
+
     local commands = {
         ["kill"] = function()
-            local humanoid = getHumanoid()
-            if humanoid then humanoid.Health = 0 end
+            local h = getHumanoid()
+            if h then h.Health = 0 end
         end,
 
         ["fly"] = function()
@@ -52,13 +60,12 @@ task.spawn(function()
         end,
 
         ["spin"] = function()
-            local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if hrp then
                 task.spawn(function()
-                    while true do
+                    while hrp and hrp.Parent do
                         task.wait()
-                        if hrp.Parent == nil then break end
-                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
+                        hrp.CFrame *= CFrame.Angles(0, math.rad(10), 0)
                     end
                 end)
             end
@@ -75,15 +82,24 @@ task.spawn(function()
                 end
             end)
         end,
+
+        ["cmds"] = function()
+            local list = {}
+            for name in pairs(commands) do
+                table.insert(list, ":" .. name)
+            end
+            table.sort(list)
+            chatMessage("Available Commands:")
+            chatMessage(table.concat(list, ", "))
+        end,
     }
 
-    -- Chat listener
-    LocalPlayer.Chatted:Connect(function(message)
-        local msg = message:lower()
-        if msg:sub(1, 1) == "/" then
-            local command = msg:sub(2)
-            if commands[command] then
-                pcall(commands[command])
+    LocalPlayer.Chatted:Connect(function(msg)
+        msg = msg:lower()
+        if msg:sub(1, 1) == ":" then
+            local cmd = msg:sub(2)
+            if commands[cmd] then
+                pcall(commands[cmd])
             end
         end
     end)
