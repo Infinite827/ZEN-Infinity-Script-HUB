@@ -1,334 +1,344 @@
--- ZEN Infinity Script HUB (sry if i took too long to fix it)
+-- ZEN Infinity Script HUB (Clean & Final)
 
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
+local Debris = game:GetService("Debris")
 
--- Load Rayfield UI (Amethyst Theme)
+-- Rayfield UI Bootloader
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
 local Window = Rayfield:CreateWindow({
-   Name = "ZEN Infinity Script HUB",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "ZEN Infinity Script HUB",
-   LoadingSubtitle = "By us.",
-   ShowText = "ZEN Infinity Script HUB", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
-   ToggleUIKeybind = ";", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Folder for ZEN Infinity Script HUB"
-   },
-
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
-
-   KeySystem = false, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
+    Name = "ZEN Infinity Script HUB",
+    Icon = 0,
+    LoadingTitle = "ZEN Infinity Script HUB",
+    LoadingSubtitle = "By us.",
+    ShowText = "ZEN Infinity Script HUB",
+    Theme = "Amethyst",
+    ToggleUIKeybind = "K",
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false,
+    ConfigurationSaving = {Enabled = true, FolderName = nil, FileName = "ZEN_Infinity"},
+    Discord = {Enabled = false, Invite = "", RememberJoins = true},
+    KeySystem = false
 })
 
 -- HOME TAB
-local Home_Tab = Window:CreateTab("Home")
-
-   Home_Tab:CreateDivider()
-local Button = Home_Tab:CreateButton({
-   Name = "Unload The ZEN Infinity Script HUB Interface",
-   Callback = function()
---reset admin commands and kill player
-Rayfield:Notify({
-   Title = "See You Soon!",
-   Content = "unloaded the script hub; your commands are also gone",
-   Duration = 3.5,
-   Image = 4483362458,
+local Home = Window:CreateTab("Home")
+Home:CreateDivider()
+Home:CreateButton({
+    Name = "Unload ZEN Infinity HUB",
+    Callback = function()
+        Rayfield:Notify({Title = "See You Soon!", Content = "Script hub unloaded.", Duration = 6.5, Image = 4483362458})
+        Rayfield:Destroy()
+    end
 })
-task.wait(1)
-   Rayfield:Destroy()
-   end,
+Home:CreateDivider()
+Home:CreateLabel("Hi, " .. (localPlayer.DisplayName or "Player"))
+Home:CreateLabel("")
+Home:CreateLabel("")
+Home:CreateParagraph({
+    Title = "About ZEN Infinity",
+    Content = [[
+ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with power‑scripts, funny mods, and unpredictable effects—this hub lets you bend the rules and mess with games hilariously. From fake admin to gameplay effects, you’ll have fun confusing everyone.]]
 })
-
-Home_Tab:CreateDivider()
-
-local displayName = localPlayer and localPlayer.DisplayName or "Player"
-
-Home_Tab:CreateLabel("Hi, " .. displayName)
-local Paragraph = Tab:CreateParagraph({Title = "paragraph", Content = "ZEN Infinity Script Hub is the ultimate tool for chaos, laughs, and creative trolling in Roblox. Packed with powerful scripts, funny scripts, and unpredictable effects, ZEN Infinity lets you bend the rules and mess with games in hilarious ways. From flying chairs to fake admin commands, it's all about having fun and confusing everyone around you. Easy to use, constantly updated, and loaded with trolling tools—ZEN Infinity is where the madness begins."})
-
-
-Home_Tab:CreateDivider()
-
-Home_Tab:CreateButton({
-    Name = "My Youtube Channel",
+Home:CreateDivider()
+Home:CreateButton({
+    Name = "My YouTube Channel",
     Callback = function()
         local url = "https://www.youtube.com/@Infinite_Original"
         StarterGui:SetCore("ChatMakeSystemMessage", {
             Text = "Opening: " .. url,
             Color = Color3.new(1, 0.8, 0.2),
-            Font = Enum.Font.SourceSansBold,
-            FontSize = Enum.FontSize.Size24
+            Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size24
         })
         pcall(function()
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "ZEN Infinity Script HUB",
-                Text = "Copied Youtube Channel Link",
+            StarterGui:SetCore("SendNotification", {
+                Title = "ZEN Infinity HUB",
+                Text = "YouTube link copied!",
                 Duration = 5
             })
         end)
     end
 })
-
-Home_Tab:CreateDivider()
-
-Home_Tab:CreateParagraph({
+Home:CreateDivider()
+Home:CreateParagraph({
     Title = "Commands",
     Content = [[
-:kill [target] - Kills target
-:sit [target] - Makes target sit
-:fling [target] - Launch target up
-:invisible [target] - Hides target
-:uninvisible [target] - Shows target
-:fly [target] - Makes player float (fake)
-:unfly [target] - Reverses fly
-:spin [target] - Spins target
-:unspin [target] - Stops spinning
-:cmds - Shows this list
+:kill [target], :sit [target], :fling [target]
+:invisible [target], :uninvisible [target]
+:fly [target], :unfly [target]
+:spin [target], :unspin [target]
+:cmds
 
 Targets: me, all, others, PlayerName
 ]]
 })
 
-local PlayerTab = Window:CreateTab("Player") -- Title
-local Divider = PlayerTab:CreateDivider()
-
- local Slider = PlayerTab:CreateSlider({
+-- PLAYER TAB
+local PlayerTab = Window:CreateTab("Player")
+PlayerTab:CreateDivider()
+PlayerTab:CreateSlider({
     Name = "WalkSpeed",
-    Range = {16, 1000},
+    Range = {16, 250},
     Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 0,
-    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-     game.Players.LocalPlayer.Character:SetAttribute("SpeedMultiplier", Value)
-    end,
- })
-
- local Slider = PlayerTab:CreateSlider({
-    Name = "Jump Height",
-    Range = {50, 10000},
+    Suffix = " speed",
+    CurrentValue = 16,
+    Flag = "WalkSpeed",
+    Callback = function(v)
+        local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = v end
+    end
+})
+PlayerTab:CreateSlider({
+    Name = "JumpPower",
+    Range = {50, 1000},
     Increment = 1,
-    Suffix = "Height",
-    CurrentValue = 0,
-    Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-     game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-    end,
- })
-
-localPlayer.CharacterAdded:Connect(function(char)
-    char:WaitForChild("Humanoid").WalkSpeed = currentWalkSpeed
-end)
-
-
--- Additional Scripts Tab
-local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458) -- Title, Image
-local Divider = Additional_Scripts:CreateDivider()
-
--- TROLLING TAB
-local Trolling_Tab = Window:CreateTab("Trolling", 4483362458) -- Title, Image
-local Divider = Trolling_Tab:CreateDivider()
-
-Trolling_Tab:CreateButton({
-    Name = "FE Sword",
-    Callback = function()
-        -- Paste working FE sword script here if you have one
-        print("FE Sword script placeholder executed.")
+    Suffix = " power",
+    CurrentValue = 50,
+    Flag = "JumpPower",
+    Callback = function(v)
+        local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.JumpPower = v end
     end
 })
 
--- COMMAND SYSTEM
-local Commands = {}
-local function getTargets(target)
-    local targets = {}
+local savedWS = 16
+localPlayer.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid").WalkSpeed = savedWS
+end)
+
+-- GAME SCRIPTS TAB
+local Game_Scripts = Window:CreateTab("Game Scripts")
+Game_Scripts:CreateDivider()
+local Button = Game_Scripts:CreateButton({
+   Name = "Natural Disaster Survival",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Natural-Disaster-Survival-Katers-NDS-Hub-19533"))()
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
+   end,
+})
+
+local Button = Game_Scripts:CreateButton({
+   Name = "Doors",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/Robloxexploiterz/Release-Lolhax/refs/heads/main/LX%20Doors%20v3.lua"))()
+   end,
+})
+
+local Button = Game_Scripts:CreateButton({
+   Name = "Roleplay Script",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/hyperionhax/c00lgui/refs/heads/main/CoolGui.lua"))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/M-E-N-A-C-E/Menace-Hub/refs/heads/main/Free%20Sus%20Missile", true))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser", true))
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-InfYeiod-reupload-27320"))()
+   end,
+})
+
+-- ADDITIONAL SCRIPTS TAB (empty for future use)
+local Additional_Scripts = Window:CreateTab("Additional Scripts")
+Additional:CreateDivider()
+
+-- TROLLING TAB
+local Trolling = Window:CreateTab("Trolling")
+Trolling:CreateDivider()
+Trolling:CreateButton({
+    Name = "FE Server‑Side Sword",
+    Callback = function()
+        -- Insert your working FE sword code here
+        StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = "Server: FE Sword activated!",
+            Color = Color3.new(0, 1, 0),
+            Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size24
+        })
+    end
+})
+
+-- COMMAND SYSTEM STARTS HERE
+------------------------------------------------
+local function getPlayersFromTarget(target)
+    local t = {}
     for _, p in pairs(Players:GetPlayers()) do
-        if target == "all" or (target == "others" and p ~= localPlayer) or (target == "me" and p == localPlayer) or string.lower(p.DisplayName) == string.lower(target) or string.lower(p.Name) == string.lower(target) then
-            table.insert(targets, p)
+        local dn, nm = p.DisplayName:lower(), p.Name:lower()
+        if target=="all"
+           or (target=="others" and p~=localPlayer)
+           or (target=="me" and p==localPlayer)
+           or dn==target or nm==target then
+            table.insert(t, p)
         end
     end
-    return targets
+    return t
 end
 
-local function makeEffect(player, type)
-    local char = player.Character
+local function chatMsg(txt, col)
+    StarterGui:SetCore("ChatMakeSystemMessage", {
+        Text = txt, Color = col or Color3.new(1,1,1),
+        Font = Enum.Font.SourceSansBold, FontSize = Enum.FontSize.Size24
+    })
+end
+
+local function applyEffect(p, kind)
+    local char = p.Character
     if not char then return end
-    local effect
-    if type == "sparkles" then
-        effect = Instance.new("Sparkles", char:FindFirstChild("HumanoidRootPart") or char)
-    elseif type == "fire" then
-        effect = Instance.new("Fire", char:FindFirstChild("HumanoidRootPart") or char)
-    elseif type == "freeze" then
-        for _, part in ipairs(char:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Anchored = true
-            end
+    if kind=="sparkles" then
+        local sp = Instance.new("Sparkles", char:FindFirstChild("HumanoidRootPart") or char)
+        Debris:AddItem(sp,2)
+    elseif kind=="fire" then
+        local f = Instance.new("Fire", char:FindFirstChild("HumanoidRootPart") or char)
+        Debris:AddItem(f,2)
+    elseif kind=="freeze" then
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then part.Anchored = true end
         end
-        task.delay(2, function()
-            for _, part in ipairs(char:GetChildren()) do
-                if part:IsA("BasePart") then
-                    part.Anchored = false
-                end
+        task.delay(2,function()
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then part.Anchored = false end
             end
         end)
     end
-    if effect then game:GetService("Debris"):AddItem(effect, 2) end
 end
 
--- CORE COMMANDS
+local Commands = {}
+
 Commands["kill"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local h = player.Character and player.Character:FindFirstChild("Humanoid")
-        if h then h.Health = 0 end
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        if p.Character and p.Character:FindFirstChild("Humanoid") then
+            p.Character.Humanoid.Health = 0
+        end
     end
 end
 
 Commands["sit"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local h = player.Character and player.Character:FindFirstChild("Humanoid")
-        if h then h.Sit = true end
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        if p.Character and p.Character:FindFirstChild("Humanoid") then
+            p.Character.Humanoid.Sit = true
+        end
     end
 end
 
 Commands["fling"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
             local bv = Instance.new("BodyVelocity", hrp)
-            bv.Velocity = Vector3.new(0, 300, 0)
-            bv.MaxForce = Vector3.new(99999, 99999, 99999)
-            game.Debris:AddItem(bv, 0.5)
+            bv.Velocity = Vector3.new(0,300,0)
+            bv.MaxForce = Vector3.new(9e4,9e4,9e4)
+            Debris:AddItem(bv,0.5)
         end
     end
 end
 
 Commands["invisible"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        for _, part in pairs(player.Character:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("Decal") then
-                part.Transparency = 1
-            elseif part:IsA("ParticleEmitter") then
-                part.Enabled = false
-            end
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        for _, obj in ipairs(p.Character:GetDescendants()) do
+            if obj:IsA("BasePart") or obj:IsA("Decal") then obj.Transparency = 1 end
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then obj.Enabled = false end
         end
+        applyEffect(p,"fire")
     end
 end
 
 Commands["uninvisible"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        for _, part in pairs(player.Character:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("Decal") then
-                part.Transparency = 0
-            elseif part:IsA("ParticleEmitter") then
-                part.Enabled = true
-            end
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        for _, obj in ipairs(p.Character:GetDescendants()) do
+            if obj:IsA("BasePart") or obj:IsA("Decal") then obj.Transparency = 0 end
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") then obj.Enabled = true end
         end
+        applyEffect(p,"sparkles")
     end
 end
 
 Commands["fly"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        makeEffect(player, "sparkles")
-        local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if root then
-            local bv = Instance.new("BodyVelocity", root)
-            bv.Velocity = Vector3.new(0, 50, 0)
-            bv.MaxForce = Vector3.new(10000, 10000, 10000)
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        applyEffect(p, "sparkles")
+        local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bv = Instance.new("BodyVelocity", hrp)
+            bv.Velocity = Vector3.new(0,50,0)
+            bv.MaxForce = Vector3.new(1e4,1e4,1e4)
             bv.Name = "FlyForce"
-            game.Debris:AddItem(bv, 5)
+            Debris:AddItem(bv,5)
         end
     end
 end
 
 Commands["unfly"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if root then
-            for _, child in pairs(root:GetChildren()) do
-                if child.Name == "FlyForce" then child:Destroy() end
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            for _, c in ipairs(hrp:GetChildren()) do
+                if c.Name == "FlyForce" then c:Destroy() end
             end
         end
     end
 end
 
 Commands["spin"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
             local bg = Instance.new("BodyAngularVelocity", hrp)
-            bg.AngularVelocity = Vector3.new(0, 10, 0)
-            bg.MaxTorque = Vector3.new(0, 400000, 0)
+            bg.AngularVelocity = Vector3.new(0,10,0)
+            bg.MaxTorque = Vector3.new(0,4e5,0)
             bg.Name = "SpinGyro"
-            game.Debris:AddItem(bg, 5)
+            Debris:AddItem(bg,5)
         end
     end
 end
 
 Commands["unspin"] = function(target)
-    for _, player in pairs(getTargets(target)) do
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    for _, p in ipairs(getPlayersFromTarget(target)) do
+        local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
-            for _, child in pairs(hrp:GetChildren()) do
-                if child.Name == "SpinGyro" then child:Destroy() end
+            for _, c in ipairs(hrp:GetChildren()) do
+                if c.Name == "SpinGyro" then c:Destroy() end
             end
         end
     end
 end
 
 Commands["cmds"] = function()
-    Commands["printcmds"] = function()
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = ":kill :sit :fling :invisible :uninvisible :fly :unfly :spin :unspin :cmds",
-            Color = Color3.new(1, 1, 0),
-            Font = Enum.Font.SourceSansBold,
-            FontSize = Enum.FontSize.Size24
-        })
+    local lines = {
+        "Commands List:",
+        ":kill [target] — Kills target(s)",
+        ":sit [target] — Sit",
+        ":fling [target] — Launch up",
+        ":invisible [target] — Hide",
+        ":uninvisible [target] — Unhide",
+        ":fly [target] — Float",
+        ":unfly [target] — Stop float",
+        ":spin [target] — Spin around",
+        ":unspin [target] — Stop spin",
+        ":cmds — Show list",
+        "",
+        "Targets: me, all, others, PlayerName"
+    }
+    for _, ln in ipairs(lines) do
+        chatMsg(ln, Color3.new(1,1,0))
     end
-    Commands["printcmds"]()
 end
 
 -- CHAT LISTENER
 localPlayer.Chatted:Connect(function(msg)
     if msg:sub(1,1) == ":" then
-        local args = {}
-        for word in string.gmatch(msg, "%S+") do table.insert(args, word) end
-        local cmd = args[1]:sub(2):lower()
-        local target = args[2] or "me"
-
-        local func = Commands[cmd]
-        if func then
-            local success, err = pcall(function() func(target) end)
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = success and "Server: Command Executed Successfully" or ("Server: Command Failed To Execute - " .. err),
-                Color = success and Color3.new(0, 1, 0) or Color3.new(1, 0, 0),
-                Font = Enum.Font.SourceSansBold,
-                FontSize = Enum.FontSize.Size24
-            })
+        local parts = {}
+        for w in msg:gmatch("%S+") do table.insert(parts, w) end
+        local cmd = parts[1]:sub(2):lower()
+        local tgt = parts[2] and parts[2]:lower() or "me"
+        if Commands[cmd] then
+            local ok, err = pcall(function() Commands[cmd](tgt) end)
+            chatMsg(
+                ok and "Server: Command Executed Successfully"
+                   or ("Server: Command Failed — ".. err),
+                ok and Color3.new(0,1,0) or Color3.new(1,0,0)
+            )
         end
     end
 end)
 
-print("ZEN Infinity HUB Loaded.")
+print("ZEN Infinity HUB Loaded ✔")
