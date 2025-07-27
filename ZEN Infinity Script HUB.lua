@@ -2,6 +2,14 @@
 -- Theme: Amethyst
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+      Rayfield:Notify({
+         Title = "Hi",
+         Content = "loaded the interface",
+         Duration = 2.5,
+         Image = 4483362458,
+      })
+
+print("Thanks for using our Script Hub!")
 
 local Window = Rayfield:CreateWindow({
    Name = "ZEN Infinity Script HUB",
