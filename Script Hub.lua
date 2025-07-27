@@ -125,6 +125,7 @@ end),
 
 -- Home Tab
 local Home_Tab = Window:CreateTab("Home", 4483362458)
+local Divider = Home_Tab:CreateDivider()
 
 Home_Tab:CreateButton({
     Name = "Unload The ZEN Infinity Script HUB",
@@ -135,6 +136,7 @@ Home_Tab:CreateButton({
 
 -- Game Scripts Tab
 local Game_Scripts = Window:CreateTab("Game Scripts", 4483362458)
+local Divider = Game_Scripts:CreateDivider()
 
 Game_Scripts:CreateButton({
     Name = "Natural Disaster Survival Scripts",
@@ -173,6 +175,7 @@ Game_Scripts:CreateButton({
 
 -- Player Tab
 local PlayerTab = Window:CreateTab("Player", 4483362458)
+local Divider = PlayerTab:CreateDivider()
 
 PlayerTab:CreateSlider({
     Name = "WalkSpeed",
@@ -206,6 +209,7 @@ PlayerTab:CreateSlider({
 
 --Additional Scripts Tab
 local Additional_Scripts = Window:CreateTab("Additional Scripts", 4483362458)
+local Divider = Additional_Scripts:CreateDivider()
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -223,57 +227,9 @@ end
 LocalPlayer.CharacterAdded:Connect(updateHumanoid)
 updateHumanoid()
 
--- Command functions
-local commands = {
-    ["kill"] = function()
-        if humanoid then
-            humanoid.Health = 0
-        end
-    end,
-
-    ["fly"] = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-    end,
-
-    ["noclip"] = function()
-        local noclip = true
-        game:GetService('RunService').Stepped:Connect(function()
-            if noclip and LocalPlayer.Character then
-                for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-                    if part:IsA("BasePart") and part.CanCollide == true then
-                        part.CanCollide = false
-                    end
-                end
-            end
-        end)
-    end,
-
-    ["spin"] = function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local hrp = LocalPlayer.Character.HumanoidRootPart
-            while true do
-                task.wait()
-                hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
-            end
-        end
-    end
-}
-
--- Chat listener
-LocalPlayer.Chatted:Connect(function(msg)
-    if msg:sub(1,1) == "/" then
-        local cmd = msg:sub(2):lower()
-        if commands[cmd] then
-            commands[cmd]()
-        else
-            warn("Unknown command:", cmd)
-        end
-    end
-end)
-
-
 --Trolling Tab
 local Trolling = Window:CreateTab("Trolling", 4483362458)
+local Divider = Trolling:CreateDivider()
 
 Trolling:CreateButton({
     Name = "FE Server-Sided Sword",
