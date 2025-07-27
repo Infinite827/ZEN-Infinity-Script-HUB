@@ -8,7 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 local DisplayName = LocalPlayer.DisplayName
 
 Rayfield:Notify({
-   Title = "Hi",
+   Title = "Hi, DisplayName",
    Content = "Loaded the interface",
    Duration = 2.5,
    Image = 4483362458,
