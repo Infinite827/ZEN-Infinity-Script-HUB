@@ -9,8 +9,6 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
          Image = 4483362458,
       })
 
-print("Thanks for using our Script Hub!")
-
 local Window = Rayfield:CreateWindow({
    Name = "ZEN Infinity Script HUB",
    Icon = 0,
