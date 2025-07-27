@@ -1,3 +1,36 @@
+--commands
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Chat Commands Table
+local Commands = {
+    ["/fly"] = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite-Store/Fly/main/main.lua"))()
+    end,
+
+    ["/kill"] = function()
+        LocalPlayer.Character:BreakJoints()
+    end,
+
+    ["/tools"] = function()
+        for _, tool in pairs(game:GetService("StarterPack"):GetChildren()) do
+            tool:Clone().Parent = LocalPlayer.Backpack
+        end
+    end,
+
+    ["/sword"] = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinite827/ZEN-Infinity-Script-HUB/main/Tools/FESword.lua"))()
+    end,
+}
+
+-- Listen for Chat Messages
+LocalPlayer.Chatted:Connect(function(msg)
+    msg = msg:lower()
+    if Commands[msg] then
+        pcall(Commands[msg])
+    end
+end)
+
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
     return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
