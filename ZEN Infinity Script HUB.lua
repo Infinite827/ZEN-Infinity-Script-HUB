@@ -1,10 +1,12 @@
-print("Thanks for using our Script Hub")
 
 -- Load Rayfield UI Library
 local success, Rayfield = pcall(function()
     return loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua'))()
 end)
-
+if success then
+print("Thanks for using our Script Hub")
+end
+else
 if not success then
     warn("Failed to load Rayfield.")
     return
