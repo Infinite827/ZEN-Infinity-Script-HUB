@@ -15,7 +15,7 @@ local Window = Rayfield:CreateWindow({
    ShowText = "ZEN Infinity Script HUB", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
-   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+   ToggleUIKeybind = ";", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
@@ -54,7 +54,7 @@ local Button = Home_Tab:CreateButton({
 --reset admin commands and kill player
 Rayfield:Notify({
    Title = "See You Soon!",
-   Content = "unloaded the script hub",
+   Content = "unloaded the script hub; your commands are also gone",
    Duration = 3.5,
    Image = 4483362458,
 })
